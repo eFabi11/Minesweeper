@@ -1,4 +1,4 @@
-package main.scala.de.htwg.se.minesweeper.model
+package de.htwg.se.minesweeper.model
 
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
