@@ -4,7 +4,7 @@ object Difficulty:
     def setDifficulty() = {
         println("Enter the Difficulty Level")
         println("0 fuer 3x3 und 1er bombe)")
-        println("1 fuer 3x3 und 10 bomben")
+        println("1 fuer 9x9 und 10 bomben")
         println("2 fuer 16x16 und 40 bomben")
 
 
