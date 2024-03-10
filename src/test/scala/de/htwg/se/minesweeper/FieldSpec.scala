@@ -1,59 +1,95 @@
 package de.htwg.se.minesweeper.model
 
+import java.io.{ByteArrayOutputStream, PrintStream}
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 
-class FieldSpec extends AnyWordSpec {
-  "A minesweeper Field" when {
-    "new" should {
-      "have a proper bar representation" in {
-        val field = new Field(3)
-        val endl = sys.props("line.separator")
-        field.bar() should be(("+" + "-" * 3) * 3 + "+" + endl)
-      }
+class FieldSpec extends AnyWordSpec 
+{
+    "A minesweeper Field" when 
+    {
+        "is empty" should 
+        {
+            
+            val fieldOne = new Field(1)
+            val field2 = new Field(2)
+            val field3 = new Field(3)
+            val endl = sys.props("line.separator")
+            "have a bar as String of form '+---+---+---+'" in 
+            {
+                field3.bar() should be("+---+---+---+" + endl)
+            }
+            "also have a bar as String of form '+---+---+---+'" in 
+            {
+                field2.bar() should be("+---+---+---+" + endl)
+            }
+            "still have a bar as String of form '+---+---+---+'" in 
+            {
+                fieldOne.bar() should be("+---+---+---+" + endl)
+            }
+            "have a scalable bar" in 
+            {
+                fieldOne.bar(1,1) should be("+-+" + endl)
+                field2.bar(2,1) should be("+--+" + endl)
+                field2.bar(1,2) should be("+-+-+" + endl)
+                field3.bar(3,3) should be("+---+---+---+" + endl)
+            }
+            "have cells as String of form '|   |   |   |'" in 
+            {
+                field3.cells(3,3) should be ("|   |   |   |" + endl)
+                field3.cells() should be("|   |   |   |" + endl)
+            }
+            "have scalable cells" in 
+            {
+                fieldOne.cells(1,1) should be("| |" + endl)
+                field2.cells(0,1) should be("||" + endl)
+                field3.cells(3,3) should be("|   |   |   |" + endl)
+                fieldOne.cells(0,3) should be("||||" + endl)
+            }
+            "have a mesh in the form" + 
+            "+-+" + 
+            "| |" + 
+            "+-+" in 
+            {
+                fieldOne.mesh(1,1) should be("+-+" + endl + "| |" + endl + "+-+" + endl)
+                fieldOne.mesh(1) should be("+-+" + endl + "| |" + endl + "+-+" + endl)
+                field2.mesh(1) should be("+-+-+" + endl + "| | |" + endl + "+-+-+" + endl + "| | |" + endl + "+-+-+" + endl)
+            }
+            "filled with Empty" should 
+            {
+                val field = new Field(3)
+                "be empty initially with Field(3)" in 
+                {
+                     field.toString() should be("+---+---+---+" + endl + "|   |   |   |" + endl + "+---+---+---+" + endl + "|   |   |   |" + endl + "+---+---+---+" + endl + "|   |   |   |" + endl + "+---+---+---+" +endl)
+                }
+            }
 
-      "have a proper cells representation" in {
-        val field = new Field(3)
-        val endl = sys.props("line.separator")
-        field.cells() should be(("|" + " " * 3) * 3 + "|" + endl)
-      }
 
-      "create a correct mesh for default parameters" in {
-        val field = new Field(3)
-        val endl = sys.props("line.separator")
-        val expectedMesh = {
-          val singleBar = ("+" + "-" * 3) * 3 + "+" + endl
-          val singleCells = ("|" + " " * 3) * 3 + "|" + endl
-          (singleBar + singleCells) * 3 + singleBar
         }
-        field.mesh() should be(expectedMesh)
-      }
+        "is Equal" should {
+            val fieldx = new Field(3)
+            val fieldy = new Field(3)
+            val fieldz = new Field(1)
 
-      "create a scalable mesh" in {
-        val fieldOne = new Field(1)
-        val endl = sys.props("line.separator")
-        fieldOne.mesh(1, 1) should be("+-+" + endl + "| |" + endl + "+-+" + endl)
-      }
-
-      "display the entire field correctly when printed" in {
-        val field = new Field(3)
-        val endl = sys.props("line.separator")
-        field.toString should be(
-          (("+---" * 3) + "+" + endl +
-            ("|   " * 3) + "|" + endl) * 3 +
-            (("+---" * 3) + "+" + endl))
-      }
+            "be true with fieldx.equals(fieldy)" in {
+                fieldx.equals(fieldy) should be(true)
+                fieldz.equals(fieldy) should be(false)
+                fieldy.equals(fieldy) should be(true)
+            }
+        }
     }
+     "The Main object" when {
+    "executed" should {
+      "print the welcome message and create a field" in {
+        val outputStreamCaptor = new ByteArrayOutputStream()
+        Console.withOut(outputStreamCaptor) {
+          de.htwg.se.minesweeper.Main.main(Array.empty)
+        }
 
-    "compared to another Field" should {
-      "be equal if their dimensions are the same" in {
-        val fieldA = new Field(3)
-        val fieldB = new Field(3)
-        val fieldC = new Field(1)
-
-        fieldA should be(fieldB)
-        fieldA should not be (fieldC)
-      }
+        val capturedOutput = outputStreamCaptor.toString.trim
+        capturedOutput should include ("Welcome to Minesweeper")
+        // Note: Additional assertions might be added based on your requirements.
+            }
+        }
     }
-  }
 }
