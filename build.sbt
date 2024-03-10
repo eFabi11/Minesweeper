@@ -1,4 +1,4 @@
-//import org.scoverage.coveralls.GitHubActions
+import org.scoverage.coveralls.GitHubActions
 
 val scala3Version = "3.2.2"
 
@@ -16,8 +16,8 @@ lazy val root = project
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.14" % "test",
   )
 
-//import org.scoverage.coveralls.Imports.CoverallsKeys._
-/*
+import org.scoverage.coveralls.Imports.CoverallsKeys._
+
 coverallsTokenFile := sys.env.get("COVERALLS_REPO_TOKEN")
 coverallsService := Some(GitHubActions)
 
@@ -29,4 +29,3 @@ coverageMinimumStmtPerPackage := 0
 coverageMinimumBranchPerPackage := 0
 coverageMinimumStmtPerFile := 0
 coverageMinimumBranchPerFile := 0
-*/

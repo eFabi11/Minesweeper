@@ -10,3 +10,6 @@ case class Field(cellNumero: Int):
     def mesh(cellWidth: Int = 3, cellNum: Int = cellNumero) = (bar(cellWidth, cellNum) + cells(cellWidth, cellNum)) * cellNum + bar(cellWidth, cellNum)
     // used for printing field in main
     override def toString(): String = mesh()
+
+
+    
