@@ -63,6 +63,24 @@ class FieldSpec extends AnyWordSpec
                 }
             }
 
+        "generate correct cells representation based on the cell width and content" in {
+            val side = 3
+            val testFieldEmpty = new Field(side, Symbols.Empty)
+            val testFieldBomb = new Field(side, Symbols.Bomb)
+
+            // Test für eine Standardzellbreite mit leerem Inhalt
+            testFieldEmpty.cells(0) shouldBe "|   |   |   |" + sys.props("line.separator")
+
+            // Test für eine Standardzellbreite mit Bombeninhalt
+            testFieldBomb.cells(0) shouldBe "| * | * | * |" + sys.props("line.separator")
+
+            // Test für eine angepasste Zellbreite mit leerem Inhalt
+            val customCellWidth = 5
+            testFieldEmpty.cells(0, customCellWidth) shouldBe "|     |     |     |" + sys.props("line.separator")
+
+            // Test für eine angepasste Zellbreite mit Bombeninhalt
+            testFieldBomb.cells(0, customCellWidth) shouldBe "|  *  |  *  |  *  |" + sys.props("line.separator")
+        }            
 
         }
     }
