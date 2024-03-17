@@ -1,6 +1,4 @@
 package de.htwg.se.minesweeper.model
-
-
 // Matrix[T] is a class for a 2 dimensional generic Matrix
 // Primary constructor takse a Vector of Type Vector[T] witch represents the rows 
 case class Matrix[T](rows: Vector[Vector[T]]):
