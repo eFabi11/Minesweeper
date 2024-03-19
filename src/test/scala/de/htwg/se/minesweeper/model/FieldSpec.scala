@@ -137,7 +137,5 @@ class FieldSpec extends AnyWordSpec
             }
         }
 
-        
-
     }
 }
