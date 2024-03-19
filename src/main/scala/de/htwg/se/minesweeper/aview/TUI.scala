@@ -12,7 +12,6 @@ import de.htwg.se.minesweeper.util.InputSource
 
 class TUI(controller: Controller, inputSource: InputSource) extends Observer:
   controller.add(this)
-
   override def update: Unit = println(controller.field.toString())
 
   def run(): Unit =
