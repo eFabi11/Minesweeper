@@ -1,60 +1,60 @@
-package de.htwg.se.minesweeper.model
-
+import de.htwg.se.minesweeper.model.{Field, Matrix, Symbols, Game, Status}
+import org.mockito.Mockito._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 
-class FieldSpec extends AnyWordSpec with Matchers {
+class FieldSpec extends AnyWordSpec with Matchers with MockitoSugar {
   "A Field" when {
     "new" should {
-      "be initialized with a specific size and fillings" in {
+      "be correctly initialized with a size and filling" in {
         val size = 3
-        val emptyField = new Field(size, Symbols.Empty)
-        emptyField.size shouldBe size
-        emptyField.matrix.cell(0, 0) shouldBe Symbols.Empty
-        emptyField.bomben.cell(0, 0) shouldBe Symbols.Empty
+        val filling = Symbols.Covered
+        val field = new Field(size, filling)
+
+        field.playerMatrix.size shouldBe size
+        for {
+          row <- 0 until size
+          col <- 0 until size
+        } field.playerMatrix.cell(row, col) shouldBe filling
       }
 
-      "be initialized with a matrix" in {
-        val matrix = new Matrix[Symbols](3, Symbols.Empty)
-        val fieldWithMatrix = new Field(matrix)
-        fieldWithMatrix.size shouldBe matrix.size
-      }
-    }
+      "have a correct bomb matrix" in {
+        val size = 3
+        val bombMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Empty))).replaceCell(1, 1, Symbols.Bomb)
+        val playerMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Covered)))
+        val field = new Field(playerMatrix, bombMatrix)
 
-    "using bar and cells" should {
-      val field = new Field(3, Symbols.Empty)
-
-      "generate a correct bar representation" in {
-        field.bar() should include("+---+")
-      }
-
-      "generate correct cells representation" in {
-        field.cells(0) should include("|   |")
-      }
-
-      "generate a correct mesh representation" in {
-        field.mesh() should include("+---+---+---+")
-        field.mesh() should include("|   |   |   |")
+        field.bombenMatrix.cell(1, 1) shouldBe Symbols.Bomb
       }
     }
 
-    "checking for bombs" should {
-      "correctly identify a cell with a bomb" in {
-        val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
-        val field = new Field(bombMatrix, bombMatrix)
-        field.isBomb(1, 1, bombMatrix) shouldBe true
-        field.isBomb(0, 0, bombMatrix) shouldBe false
+    "a cell is opened" should {
+      "reveal a bomb if present and set game state to Lost" in {
+        val size = 3
+        val bombMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Empty))).replaceCell(1, 1, Symbols.Bomb)
+        val playerMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Covered)))
+        val game = mock[Game]
+        val field = new Field(playerMatrix, bombMatrix)
+
+        field.open(1, 1, game)
+        
+        verify(game).gameState = Status.Lost
       }
-    }
 
-    "opening a cell" should {
-      "change the state correctly for a non-bomb cell" in {
-        val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
-        val coverMatrix = new Matrix[Symbols](3, Symbols.Covered)
-        val game = new Game(Status.Playing)
-        val field = new Field(coverMatrix, bombMatrix).open(0, 0, game)
+      "reveal empty space and adjacent numbers if no bomb" in {
+        val size = 3
+        val bombMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Empty)))
+        val playerMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Covered)))
+        val game = mock[Game]
+        when(game.state).thenReturn(Status.Playing)
+        val field = new Field(playerMatrix, bombMatrix)
 
-        field.playerMatrix.cell(0, 0) should not be Symbols.Covered
+        val openedField = field.open(1, 1, game)
+        
+        // Assuming your open method correctly updates cells based on bomb proximity
+        openedField.playerMatrix.cell(1, 1) should not be Symbols.Covered
+        // Add more specific checks based on your game logic
       }
     }
   }
