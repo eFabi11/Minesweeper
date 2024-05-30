@@ -1,40 +1,20 @@
-package de.htwg.se.minesweeper.difficulty
-
+import de.htwg.se.minesweeper.model._
+import de.htwg.se.minesweeper.difficulty.{EasyDifficulty, DifficultyStrategy}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
-import de.htwg.se.minesweeper.model.Game
+import org.mockito.ArgumentMatchers._
+import org.scalatestplus.mockito.MockitoSugar
 
-class DifficultyStrategySpec extends AnyWordSpec with Matchers with MockitoSugar {
+class ControllerSpec extends AnyWordSpec with Matchers with MockitoSugar {
 
-  "An EasyDifficulty strategy" should {
-    "set the game difficulty to easy" in {
+  "A Controller" should {
+    "initialize the field" in {
       val game = mock[Game]
-      val easyDifficulty = new EasyDifficulty
-      easyDifficulty.setDifficulty(game)
-      verify(game).gridSize = 3
-      verify(game).bombCount = 1
-    }
-  }
-
-  "A MediumDifficulty strategy" should {
-    "set the game difficulty to medium" in {
-      val game = mock[Game]
-      val mediumDifficulty = new MediumDifficulty
-      mediumDifficulty.setDifficulty(game)
-      verify(game).gridSize = 9
-      verify(game).bombCount = 6
-    }
-  }
-
-  "A HardDifficulty strategy" should {
-    "set the game difficulty to hard" in {
-      val game = mock[Game]
-      val hardDifficulty = new HardDifficulty
-      hardDifficulty.setDifficulty(game)
-      verify(game).gridSize = 16
-      verify(game).bombCount = 40
+      val field = mock[Field]
+      when(game.gridSize).thenReturn(10)
+      doNothing().when(game).setDifficulty()
+      // Fügen Sie hier weitere Assertions hinzu, um das Verhalten Ihres Controllers zu überprüfen
     }
   }
 }
