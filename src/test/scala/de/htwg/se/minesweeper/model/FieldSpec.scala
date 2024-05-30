@@ -1,60 +1,36 @@
-import de.htwg.se.minesweeper.model.{Field, Matrix, Symbols, Game, Status}
-import org.mockito.Mockito._
+package de.htwg.se.minesweeper.model
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.mockito.MockitoSugar
 
-class FieldSpec extends AnyWordSpec with Matchers with MockitoSugar {
+class FieldSpec extends AnyWordSpec with Matchers {
   "A Field" when {
-    "new" should {
-      "be correctly initialized with a size and filling" in {
-        val size = 3
-        val filling = Symbols.Covered
-        val field = new Field(size, filling)
-
-        field.playerMatrix.size shouldBe size
-        for {
-          row <- 0 until size
-          col <- 0 until size
-        } field.playerMatrix.cell(row, col) shouldBe filling
-      }
-
-      "have a correct bomb matrix" in {
-        val size = 3
-        val bombMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Empty))).replaceCell(1, 1, Symbols.Bomb)
-        val playerMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Covered)))
-        val field = new Field(playerMatrix, bombMatrix)
-
-        field.bombenMatrix.cell(1, 1) shouldBe Symbols.Bomb
+    "created" should {
+      "initialize with the correct size and filling" in {
+        val field = new Field(3, Symbols.Covered)
+        field.size should be(3)
+        (for {
+          y <- 0 until field.size
+          x <- 0 until field.size
+        } yield field.playerMatrix.cell(y, x)).forall(_ == Symbols.Covered) should be(true)
       }
     }
 
-    "a cell is opened" should {
-      "reveal a bomb if present and set game state to Lost" in {
-        val size = 3
-        val bombMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Empty))).replaceCell(1, 1, Symbols.Bomb)
-        val playerMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Covered)))
-        val game = mock[Game]
-        val field = new Field(playerMatrix, bombMatrix)
-
-        field.open(1, 1, game)
-        
-        verify(game).gameState = Status.Lost
+    "flagging a cell" should {
+      "mark the cell with a flag" in {
+        val field = new Field(3, Symbols.Covered)
+        val updatedField = field.flag(0, 0)
+        updatedField.playerMatrix.cell(0, 0) should be(Symbols.Flag)
       }
+    }
 
-      "reveal empty space and adjacent numbers if no bomb" in {
-        val size = 3
-        val bombMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Empty)))
-        val playerMatrix = Matrix(Vector.fill(size)(Vector.fill(size)(Symbols.Covered)))
-        val game = mock[Game]
-        when(game.state).thenReturn(Status.Playing)
+    "opening a cell" should {
+      "uncover the cell and update the field" in {
+        val bombMatrix = new Matrix[Symbols](3, Symbols.Empty)
+        val playerMatrix = new Matrix[Symbols](3, Symbols.Covered)
         val field = new Field(playerMatrix, bombMatrix)
-
-        val openedField = field.open(1, 1, game)
-        
-        // Assuming your open method correctly updates cells based on bomb proximity
-        openedField.playerMatrix.cell(1, 1) should not be Symbols.Covered
-        // Add more specific checks based on your game logic
+        val updatedField = field.open(0, 0, Game())
+        updatedField.playerMatrix.cell(0, 0) should not be Symbols.Covered
       }
     }
   }

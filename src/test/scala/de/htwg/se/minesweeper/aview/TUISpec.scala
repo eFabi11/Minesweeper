@@ -1,75 +1,105 @@
 package de.htwg.se.minesweeper.aview
 
 import de.htwg.se.minesweeper.controller.Controller
-import de.htwg.se.minesweeper.model.{Field, Game, Status}
+import de.htwg.se.minesweeper.model.{Field, Move, Symbols, Status, Game}
 import de.htwg.se.minesweeper.util.InputSource
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito
-import org.mockito.Mockito._
-import org.scalatest.matchers.should.Matchers
+import de.htwg.se.minesweeper.difficulty.{EasyDifficulty, MediumDifficulty, HardDifficulty}
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers._
 
 class TUISpec extends AnyWordSpec with Matchers with MockitoSugar {
-  "The TUI" when {
-    "a new game is started" should {
-      "print the initial field" in {
-        // Deine bereits vorhandene Setup-Logik...
-      }
+
+  "A TUI" should {
+    "select difficulty based on user input" in {
+      val controller = mock[Controller]
+      val inputSource = mock[InputSource]
+
+      when(inputSource.readLine()).thenReturn("e")
+      val tui = new TUI(controller, inputSource)
+      tui.selectDifficulty()
+
+      verify(controller).setDifficulty(any[EasyDifficulty])
     }
 
-    "user enters 'o12'" should {
-      "call uncoverField on the controller" in {
-        // Deine bereits vorhandene Setup-Logik...
-      }
+    "handle invalid difficulty input by setting to Easy" in {
+      val controller = mock[Controller]
+      val inputSource = mock[InputSource]
+
+      when(inputSource.readLine()).thenReturn("x")
+      val tui = new TUI(controller, inputSource)
+      tui.selectDifficulty()
+
+      verify(controller).setDifficulty(any[EasyDifficulty])
     }
 
-    "user enters 'q'" should {
-      "exit the game loop" in {
-        // Deine bereits vorhandene Setup-Logik...
-      }
+    "handle valid difficulty input for Medium" in {
+      val controller = mock[Controller]
+      val inputSource = mock[InputSource]
+
+      when(inputSource.readLine()).thenReturn("m")
+      val tui = new TUI(controller, inputSource)
+      tui.selectDifficulty()
+
+      verify(controller).setDifficulty(any[MediumDifficulty])
     }
 
-    "user inputs an invalid command" should {
-    "not crash and prompt again" in {
-        val controller = mock[Controller]
-        val inputSource = mock[InputSource]
-        val game = mock[Game]
-        val field = mock[Field]
+    "handle valid difficulty input for Hard" in {
+      val controller = mock[Controller]
+      val inputSource = mock[InputSource]
 
-        when(controller.game).thenReturn(game)
-        when(game.state).thenReturn(Status.Playing)
-        when(controller.field).thenReturn(field) // Stelle sicher, dass field() einen Wert zurückgibt
-        when(field.toString).thenReturn("Initial Field") // Optional: Mock das Verhalten von toString()
-        when(inputSource.readLine()).thenReturn("invalid", "q")
+      when(inputSource.readLine()).thenReturn("h")
+      val tui = new TUI(controller, inputSource)
+      tui.selectDifficulty()
 
-        val tui = new TUI(controller, inputSource)
-        tui.run()
-
-        verify(inputSource, Mockito.atLeast(2)).readLine()
-    }
+      verify(controller).setDifficulty(any[HardDifficulty])
     }
 
-    "the game state changes to Won or Lost" should {
-      "exit the game loop after printing the final field state" in {
-         "exit the game loop after printing the final field state" in {
-        val controller = mock[Controller]
-        val game = mock[Game]
-        val inputSource = mock[InputSource]
+    "process user moves correctly" in {
+      val controller = mock[Controller]
+      val inputSource = mock[InputSource]
 
-        when(controller.game).thenReturn(game)
-        when(inputSource.readLine()).thenReturn("o12")
-        when(game.state).thenReturn(Status.Won) // or Status.Lost for another scenario
+      val field = new Field(3, Symbols.Covered)
+      val game = new Game()
+      game.setDifficultyStrategy(new EasyDifficulty)
+      game.setDifficulty()
 
-        val tui = new TUI(controller, inputSource)
-        tui.run()
+      when(controller.field).thenReturn(field)
+      when(controller.game).thenReturn(game)
+      when(inputSource.readLine()).thenReturn("o00", "q")
 
-        // Ensure the final field state is printed
-        verify(controller, times(1)).field
-        // Ensure the game exits after changing the state
-        verify(inputSource, atLeastOnce()).readLine()
-      }
+      val tui = new TUI(controller, inputSource)
+      
+      // Start the game
+      tui.run()
+      
+      // Verify that the correct methods on the controller are called
+      verify(controller).uncoverField(0, 0)
     }
-}
+
+    "handle game end conditions" in {
+      val controller = mock[Controller]
+      val inputSource = mock[InputSource]
+
+      val field = new Field(3, Symbols.Covered)
+      val game = new Game()
+      game.setDifficultyStrategy(new EasyDifficulty)
+      game.setDifficulty()
+      game.gameState = Status.Won
+
+      when(controller.field).thenReturn(field)
+      when(controller.game).thenReturn(game)
+      when(inputSource.readLine()).thenReturn("o00")
+
+      val tui = new TUI(controller, inputSource)
+
+      // Process a move that ends the game
+      tui.run()
+
+      // Verify that the game state is checked and the loop exits
+      verify(controller).uncoverField(0, 0)
+    }
   }
 }

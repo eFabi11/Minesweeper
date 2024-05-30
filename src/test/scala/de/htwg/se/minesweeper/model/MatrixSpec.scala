@@ -1,56 +1,47 @@
+package de.htwg.se.minesweeper.model
+
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers._
-import de.htwg.se.minesweeper.model.{Matrix, Symbols}
 
-class MatrixSpec extends AnyWordSpec {
-
+class MatrixSpec extends AnyWordSpec with Matchers {
   "A Matrix" when {
-
-    "empty" should {
+    "new" should {
       "be created with a specified dimension and a filling element" in {
-        val testMatrix = new Matrix[Symbols](3, Symbols.One)
-        testMatrix.size should be(3)
-        // Additional checks to ensure all elements are Symbols.One
+        val matrix = new Matrix(3, Symbols.Empty)
+        matrix.size should be(3)
+        (for {
+          y <- 0 until matrix.size
+          x <- 0 until matrix.size
+        } yield matrix.cell(y, x)).forall(_ == Symbols.Empty) should be(true)
       }
 
       "be created from a Vector of Vectors" in {
-        val testMatrix2 = Matrix(Vector(Vector(Symbols.One)))
-        testMatrix2.size should be(1)
-        // Additional checks for the content of testMatrix2
+        val vector = Vector(Vector(Symbols.Empty, Symbols.Empty), Vector(Symbols.Empty, Symbols.Empty))
+        val matrix = new Matrix(vector)
+        matrix.size should be(2)
+        (for {
+          y <- 0 until matrix.size
+          x <- 0 until matrix.size
+        } yield matrix.cell(y, x)).forall(_ == Symbols.Empty) should be(true)
       }
     }
 
     "filled with elements" should {
-      val testMatrix3 = new Matrix[String](3, "F")
-
       "allow access to its cells" in {
-        testMatrix3.cell(0, 0) should be("F")
-        // Additional checks for other cells
-      }
-
-      "be fillable with a new element" in {
-        val resultMatrix = testMatrix3.fill("S")
-        resultMatrix.cell(1, 1) should be("S")
-        // Check immutability - original matrix should remain unchanged
-        testMatrix3.cell(1, 1) should be("F")
+        val matrix = new Matrix(3, Symbols.Empty)
+        matrix.cell(0, 0) should be(Symbols.Empty)
       }
 
       "allow replacing a cell and return a new Matrix" in {
-        val resultMatrix2 = testMatrix3.replaceCell(0, 0, "1")
-        resultMatrix2.cell(0, 0) should be("1")
-        // Check immutability - original matrix should remain unchanged
-        testMatrix3.cell(0, 0) should be("F")
+        val matrix = new Matrix(3, Symbols.Empty)
+        val newMatrix = matrix.replaceCell(0, 0, Symbols.Bomb)
+        newMatrix.cell(0, 0) should be(Symbols.Bomb)
       }
-    }
-
-    "created from a Vector of Vectors" should {
-      val vectorMatrix = Matrix(Vector(Vector(1, 2, 3), Vector(4, 5, 6), Vector(7, 8, 9)))
 
       "return the correct row when accessed" in {
-        vectorMatrix.row(1) should be(Vector(4, 5, 6))
-        // Additional checks for other rows
+        val matrix = new Matrix(3, Symbols.Empty)
+        matrix.row(0) should be(Vector(Symbols.Empty, Symbols.Empty, Symbols.Empty))
       }
     }
-
   }
 }

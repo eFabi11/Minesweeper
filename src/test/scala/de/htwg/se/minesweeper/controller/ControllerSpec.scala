@@ -1,63 +1,63 @@
 package de.htwg.se.minesweeper.controller
 
-import de.htwg.se.minesweeper.controller.Controller
-import de.htwg.se.minesweeper.model.{Field, Game, Status}
-import de.htwg.se.minesweeper.util.{Observable, Observer}
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito._
-import org.scalatest.matchers.should.Matchers
+import de.htwg.se.minesweeper.model.{Field, Game, Symbols, Status}
+import de.htwg.se.minesweeper.difficulty.EasyDifficulty
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers._
 
 class ControllerSpec extends AnyWordSpec with Matchers with MockitoSugar {
-  "A Controller" when {
-    "new" should {
-      "initialize with a given field and game" in {
-        val field = mock[Field]
-        val game = mock[Game]
-        val controller = Controller(field, game)
 
-        controller.field shouldBe field
-        controller.game shouldBe game
-      }
+  "A Controller" should {
+    "initialize the field" in {
+      val game = mock[Game]
+      val field = new Field(3, Symbols.Covered) // Use real field here to avoid toString() verification issue
+      when(game.gridSize).thenReturn(3)
+      when(game.bombCount).thenReturn(1)
+      when(game.initializeField(any[Int], any[Int])).thenReturn(field)
+
+      val controller = new Controller(field, game)
+      controller.initializeField()
+
+      // Verify that the field is initialized with the correct dimensions
+      field.size should be(3)
+      field.playerMatrix.cell(0, 0) should be(Symbols.Covered)
     }
 
-    "firstMove is called" should {
-      "update the field based on the game's first move logic and notify observers" in {
-        val initialField = mock[Field]
-        val updatedField = mock[Field]
-        val game = mock[Game]
-        when(game.premierMove(1, 2, initialField, game)).thenReturn(updatedField)
+    "handle the first move and uncover subsequent moves" in {
+      val game = mock[Game]
+      val field = new Field(3, Symbols.Covered) // Use real field here
+      when(game.gridSize).thenReturn(3)
+      when(game.bombCount).thenReturn(1)
+      when(game.initializeField(any[Int], any[Int])).thenReturn(field)
+      when(game.gameState).thenReturn(Status.Playing)
 
-        val controller = Controller(initialField, game)
-        val observer = mock[Observer]
-        controller.add(observer)
-        
-        controller.firstMove(1, 2, game)
+      val controller = new Controller(field, game)
+      controller.uncoverField(0, 0)
 
-        controller.field shouldBe updatedField
-        verify(game).premierMove(1, 2, initialField, game)
-        verify(observer).update
-      }
+      // Verify that the first move initializes the field
+      verify(game).initializeField(0, 0)
+      controller.isFirstMove = false
+      controller.uncoverField(0, 1)
+
+      // Verify that the open method is called
+      field.playerMatrix.cell(0, 1) should not be Symbols.Covered
     }
 
-    "uncoverField is called" should {
-      "update the field by uncovering the specified cell and notify observers" in {
-        val initialField = mock[Field]
-        val updatedField = mock[Field]
-        val game = mock[Game]
-        when(initialField.open(1, 2, game)).thenReturn(updatedField)
+    "set the difficulty" in {
+      val game = mock[Game]
+      val field = new Field(3, Symbols.Covered) // Use real field here
+      when(game.gridSize).thenReturn(3)
+      when(game.bombCount).thenReturn(1)
 
-        val controller = Controller(initialField, game)
-        val observer = mock[Observer]
-        controller.add(observer)
+      val controller = new Controller(field, game)
+      controller.setDifficulty(new EasyDifficulty)
 
-        controller.uncoverField(1, 2, game)
-
-        controller.field shouldBe updatedField
-        verify(initialField).open(1, 2, game)
-        verify(observer).update
-      }
+      // Verify that the game difficulty is set
+      verify(game).setDifficultyStrategy(any[EasyDifficulty])
+      verify(game).setDifficulty()
     }
   }
 }

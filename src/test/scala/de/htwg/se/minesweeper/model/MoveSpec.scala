@@ -1,16 +1,15 @@
 package de.htwg.se.minesweeper.model
 
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class MoveSpec extends AnyWordSpec{
-    "The Move" should {
-        "have a String, and x,y position" in{
-            val testMove = Move("open", 2, 4)
-            testMove.value should be("open")
-            testMove.x should be(2)
-            testMove.y should be(4)
-
-        }
+class MoveSpec extends AnyWordSpec with Matchers {
+  "The Move" should {
+    "have a String, and x,y position" in {
+      val move = Move("open", 1, 2)
+      move.value should be("open")
+      move.x should be(1)
+      move.y should be(2)
     }
+  }
 }
