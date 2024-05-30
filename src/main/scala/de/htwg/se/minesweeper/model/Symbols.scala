@@ -14,7 +14,7 @@ enum Symbols(representedAsString: String):
   case Six extends Symbols("6")
   case Seven extends Symbols("7")
   case Eight extends Symbols("8")
-  case Flag extends Symbols("F")
+  case Flag extends Symbols("f")
 
 object Symbols {
   def fromInt(minesAround: Int): Symbols = minesAround match {
