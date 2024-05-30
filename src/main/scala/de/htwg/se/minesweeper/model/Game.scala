@@ -1,79 +1,103 @@
 package de.htwg.se.minesweeper.model
 
 import scala.util.Random
-import de.htwg.se.minesweeper.difficulty.DifficultyLevel
-import de.htwg.se.minesweeper.model.{Field, Matrix, Symbols, Status}
+import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
 
-case class Game(var difficulty: DifficultyLevel.Level = DifficultyLevel.Easy) {
+case class Game() {
+
+    var gridSize = 0
+    var bombCount = 0
     var gameState = Status.Playing
 
-    def setDifficulty(level: DifficultyLevel.Level): Unit = {
-        difficulty = level
+    private var difficultyStrategy: DifficultyStrategy = _
+
+    def setDifficultyStrategy(strategy: DifficultyStrategy): Unit = {
+        this.difficultyStrategy = strategy
     }
 
-    // This function is now designed to initialize the game field after the first move.
-    // It makes sure the player's first move is on a safe spot by not placing bombs until after this move.
+    def setDifficulty(): Unit = {
+        if (difficultyStrategy != null) {
+            difficultyStrategy.setDifficulty(this)
+        }
+    }
+
     def initializeField(x: Int, y: Int): Field = {
-        val emptyMatrix = new Matrix(difficulty.gridSize, Symbols.Covered)
-        val bombMatrix = setBombs(emptyMatrix, difficulty.bombCount, x, y)
-        val playerMatrix = reveal(x, y, bombMatrix, new Matrix(difficulty.gridSize, Symbols.Covered))
-        new Field(playerMatrix, bombMatrix)
+        val bombenMatrix = setBombs(new Matrix(gridSize, Symbols.Empty), bombCount, x, y)
+        val playerMatrix = Num(x, y, bombenMatrix, new Matrix(gridSize, Symbols.Covered))
+        new Field(playerMatrix, bombenMatrix)
     }
 
-    def inArea(x: Int, y: Int, size: Int): Boolean = x >= 0 && x < size && y >= 0 && y < size
-
-    // Recursively reveal cells starting from (x, y)
-    def reveal(x: Int, y: Int, bombMatrix: Matrix[Symbols], playerMatrix: Matrix[Symbols]): Matrix[Symbols] = {
-        if (!inArea(x, y, bombMatrix.size) || playerMatrix.cell(y, x) != Symbols.Covered) {
-            return playerMatrix
-        }
-
-        val minesAround = countMinesAround(x, y, bombMatrix)
-
-        if (minesAround == 0) {
-            var updatedMatrix = playerMatrix.replaceCell(y, x, Symbols.Empty)
-            for (dx <- -1 to 1; dy <- -1 to 1 if dx != 0 || dy != 0) {
-                updatedMatrix = reveal(x + dx, y + dy, bombMatrix, updatedMatrix)
-            }
-            updatedMatrix
-        } else {
-            playerMatrix.replaceCell(y, x, Symbols.fromInt(minesAround))
-        }
-    }
-
-    def setBombs(emptyMatrix: Matrix[Symbols], bombCount: Int, x: Int, y: Int): Matrix[Symbols] = {
-        val forbidden = (x, y)
-        var bombsPlaced = 0
-        var bombMatrix = emptyMatrix
+    private def setBombs(emptyMatrix: Matrix[Symbols], bombCount: Int, x: Int, y: Int): Matrix[Symbols] = {
+        var bombsMatrix = emptyMatrix
+        val sizeM = emptyMatrix.size
+        var placedBombs: Int = 0
         val random = new Random()
 
-        while (bombsPlaced < bombCount) {
-            val randX = random.nextInt(emptyMatrix.size)
-            val randY = random.nextInt(emptyMatrix.size)
-
-            if (bombMatrix.cell(randY, randX) != Symbols.Bomb && (randX, randY) != forbidden) {
-                bombMatrix = bombMatrix.replaceCell(randY, randX, Symbols.Bomb)
-                bombsPlaced += 1
+        while (placedBombs < bombCount) {
+            val randX = random.nextInt(sizeM)
+            val randY = random.nextInt(sizeM)
+            if (bombsMatrix.cell(randY, randX) != Symbols.Bomb && !(randX == x && randY == y)) {
+                bombsMatrix = bombsMatrix.replaceCell(randY, randX, Symbols.Bomb)
+                placedBombs += 1
             }
         }
-        bombMatrix
+        bombsMatrix
     }
 
-    def countMinesAround(x: Int, y: Int, matrix: Matrix[Symbols]): Int = {
-        (for {
-            dx <- -1 to 1
-            dy <- -1 to 1
-            if inArea(x + dx, y + dy, matrix.size) && matrix.cell(y + dy, x + dx) == Symbols.Bomb
-        } yield 1).sum
+    def isBomb(x: Int, y: Int, m: Matrix[Symbols]): Boolean = {
+        val si = m.size - 1
+        if (inArea(x, y, si)) {
+            if (m.cell(y, x) == Symbols.Bomb) true else false
+        } else false
     }
 
-    def isBomb(x: Int, y: Int, matrix: Matrix[Symbols]): Boolean = {
-        inArea(x, y, matrix.size) && matrix.cell(y, x) == Symbols.Bomb
+    def inArea(x: Int, y: Int, side: Int): Boolean = x >= 0 && x <= side && y >= 0 && y <= side
+
+    def Num(x: Int, y: Int, bMatrix: Matrix[Symbols], pMatrix: Matrix[Symbols]): Matrix[Symbols] = {
+        var tmpMatrix = pMatrix
+        val si = bMatrix.size - 1
+
+        if (!(inArea(x, y, si)) || pMatrix.cell(y, x) != Symbols.Covered) return pMatrix
+
+        var minesFound = 0
+        if (isBomb(x + 1, y + 1, bMatrix)) minesFound += 1
+        if (isBomb(x, y + 1, bMatrix)) minesFound += 1
+        if (isBomb(x - 1, y + 1, bMatrix)) minesFound += 1
+        if (isBomb(x + 1, y, bMatrix)) minesFound += 1
+        if (isBomb(x - 1, y, bMatrix)) minesFound += 1
+        if (isBomb(x + 1, y - 1, bMatrix)) minesFound += 1
+        if (isBomb(x, y - 1, bMatrix)) minesFound += 1
+        if (isBomb(x - 1, y - 1, bMatrix)) minesFound += 1
+
+        if (minesFound == 0) {
+            tmpMatrix = tmpMatrix.replaceCell(y, x, Symbols.Empty)
+            if (inArea(x + 1, y + 1, si)) tmpMatrix = Num(x + 1, y + 1, bMatrix, tmpMatrix)
+            if (inArea(x, y + 1, si)) tmpMatrix = Num(x, y + 1, bMatrix, tmpMatrix)
+            if (inArea(x - 1, y + 1, si)) tmpMatrix = Num(x - 1, y + 1, bMatrix, tmpMatrix)
+            if (inArea(x + 1, y, si)) tmpMatrix = Num(x + 1, y, bMatrix, tmpMatrix)
+            if (inArea(x - 1, y, si)) tmpMatrix = Num(x - 1, y, bMatrix, tmpMatrix)
+            if (inArea(x + 1, y - 1, si)) tmpMatrix = Num(x + 1, y - 1, bMatrix, tmpMatrix)
+            if (inArea(x, y - 1, si)) tmpMatrix = Num(x, y - 1, bMatrix, tmpMatrix)
+            if (inArea(x - 1, y - 1, si)) tmpMatrix = Num(x - 1, y - 1, bMatrix, tmpMatrix)
+        } else {
+            val symb = Symbols.fromInt(minesFound)
+            tmpMatrix = tmpMatrix.replaceCell(y, x, symb)
+        }
+        tmpMatrix
     }
 
-    def checkGameState(): Unit = {
-    if(this.gameState == Status.Won) println("you just won!!!")
-    else if (this.gameState == Status.Lost) println("you just Lost!!!")
-    else print("")
+    def checkGameState(field: Field): Unit = {
+        val allBombsFlagged = field.playerMatrix.rows.zip(field.bombenMatrix.rows).forall {
+            case (playerRow, bombRow) =>
+                playerRow.zip(bombRow).forall {
+                    case (playerCell, bombCell) =>
+                        (playerCell == Symbols.Flag && bombCell == Symbols.Bomb) || bombCell != Symbols.Bomb
+                }
+        }
+
+        if (allBombsFlagged) {
+            this.gameState = Status.Won
+            println("You just won!!!")
+        }
     }
 }

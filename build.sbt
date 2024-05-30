@@ -13,9 +13,11 @@ lazy val root = project
     //libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
     
     libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.14",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.14" % "test",
-    libraryDependencies += "org.mockito" % "mockito-core" % "5.11.0" % Test, 
-    libraryDependencies += "org.scalatestplus" %% "mockito-3-4" % "3.2.9.0" % Test 
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "3.2.14" % Test,
+      "org.mockito" % "mockito-core" % "5.3.1" % Test,
+      "org.scalatestplus" %% "mockito-4-6" % "3.2.14.0" % Test
+    )
   )
 
 import org.scoverage.coveralls.Imports.CoverallsKeys._

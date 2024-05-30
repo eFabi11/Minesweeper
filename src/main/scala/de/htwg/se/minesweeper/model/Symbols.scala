@@ -14,10 +14,9 @@ enum Symbols(representedAsString: String):
   case Six extends Symbols("6")
   case Seven extends Symbols("7")
   case Eight extends Symbols("8")
+  case Flag extends Symbols("F")
 
-// Companion object for the Symbols enum
 object Symbols {
-  // Method to convert an integer to its corresponding Symbols enum
   def fromInt(minesAround: Int): Symbols = minesAround match {
     case 0 => Symbols.Zero
     case 1 => Symbols.One

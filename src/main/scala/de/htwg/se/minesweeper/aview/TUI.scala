@@ -2,12 +2,9 @@ package de.htwg.se.minesweeper.aview
 
 import de.htwg.se.minesweeper.controller.Controller
 import de.htwg.se.minesweeper.util.Observer
-import scala.io.StdIn.readLine
-import de.htwg.se.minesweeper.model.Move
+import de.htwg.se.minesweeper.model.{Move, Symbols, Status}
 import de.htwg.se.minesweeper.util.InputSource
-import de.htwg.se.minesweeper.difficulty.DifficultyLevel
-
-
+import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, EasyDifficulty, MediumDifficulty, HardDifficulty}
 
 class TUI(controller: Controller, inputSource: InputSource) extends Observer {
 
@@ -22,18 +19,20 @@ class TUI(controller: Controller, inputSource: InputSource) extends Observer {
     def selectDifficulty(): Unit = {
         println("Waehle den Schwierigkeitsgrad: [E]asy, [M]edium, [H]ard")
         val input = inputSource.readLine().toUpperCase
-        val selectedDifficulty = input match {
-            case "E" => DifficultyLevel.Easy
-            case "M" => DifficultyLevel.Medium
-            case "H" => DifficultyLevel.Hard
-            case _ => DifficultyLevel.Easy
+        println(s"Input received: $input")
+        val selectedStrategy: DifficultyStrategy = input match {
+            case "E" => new EasyDifficulty
+            case "M" => new MediumDifficulty
+            case "H" => new HardDifficulty
+            case _ => 
+                println("Ungültige Eingabe, Standard: Easy")
+                new EasyDifficulty
         }
-        controller.game.setDifficulty(selectedDifficulty)
-        // Initialisieren Sie hier das Feld basierend auf der ausgewählten Schwierigkeit,
-        
-        controller.firstMove(0, 0) // Nutzen Sie Standardkoordinaten oder eine andere Logik
+        println(s"Difficulty strategy selected: $selectedStrategy")
+        controller.setDifficulty(selectedStrategy)
+        println("Schwierigkeitsgrad ausgewählt. Hier ist das Spielfeld:")
+        println(controller.field.toString())
     }
-
 
     private def userIn2(input: String): Option[Move] = {
         input match {
@@ -47,13 +46,16 @@ class TUI(controller: Controller, inputSource: InputSource) extends Observer {
     }
 
     private def parseInputAndPrintLoop(): Unit = {
-        println("Enter your move:")
+        println("Enter your move (format: oXY to open, fXY to flag, q to quit):")
         val input = inputSource.readLine()
         userIn2(input) match {
             case None => System.exit(0)
             case Some(move) =>
-                controller.uncoverField(move.x, move.y)
-                controller.game.checkGameState()
+                if (move.value == "open") {
+                    controller.uncoverField(move.x, move.y)
+                } else if (move.value == "flag") {
+                    controller.flagField(move.x, move.y)
+                }
                 if (controller.game.gameState == Status.Lost || controller.game.gameState == Status.Won) {
                     println("Spiel beendet. Status: " + controller.game.gameState)
                     return
@@ -63,9 +65,3 @@ class TUI(controller: Controller, inputSource: InputSource) extends Observer {
         }
     }
 }
-
-
-enum Status:
-    case Playing, Won, Lost
-
-     
