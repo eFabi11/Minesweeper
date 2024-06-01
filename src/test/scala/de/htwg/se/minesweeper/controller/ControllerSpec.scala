@@ -72,6 +72,7 @@ class ControllerSpec extends AnyFlatSpec with Matchers {
     controller.field.playerMatrix.cell(1, 1) should not be Symbols.Covered
 
     // Now undo that action
+    //test
     controller.undo()
     controller.field.playerMatrix.cell(1, 1) should be(Symbols.Covered)
   }
