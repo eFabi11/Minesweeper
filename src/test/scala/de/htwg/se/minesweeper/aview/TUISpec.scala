@@ -17,13 +17,40 @@ class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
     val inputSource = new MockInputSource(List())
     val tui = new TUI(controller, inputSource)
     when(controller.field).thenReturn(new Field(3, Symbols.Covered))
-    tui.update // Entfernen Sie die Klammern
+    tui.update
     verify(controller).field
   }
 
   it should "select difficulty correctly" in {
     val controller = mock[Controller]
     val inputSource = new MockInputSource(List("E"))
+    val tui = new TUI(controller, inputSource)
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
+    tui.selectDifficulty()
+    verify(controller).setDifficulty(isA(classOf[EasyDifficulty]))
+  }
+
+  it should "handle medium difficulty selection" in {
+    val controller = mock[Controller]
+    val inputSource = new MockInputSource(List("M"))
+    val tui = new TUI(controller, inputSource)
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
+    tui.selectDifficulty()
+    verify(controller).setDifficulty(isA(classOf[MediumDifficulty]))
+  }
+
+  it should "handle hard difficulty selection" in {
+    val controller = mock[Controller]
+    val inputSource = new MockInputSource(List("H"))
+    val tui = new TUI(controller, inputSource)
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
+    tui.selectDifficulty()
+    verify(controller).setDifficulty(isA(classOf[HardDifficulty]))
+  }
+
+  it should "handle invalid difficulty selection by defaulting to easy" in {
+    val controller = mock[Controller]
+    val inputSource = new MockInputSource(List("X"))
     val tui = new TUI(controller, inputSource)
     when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     tui.selectDifficulty()
@@ -38,15 +65,6 @@ class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
     when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     tui.parseInputAndPrintLoop(List("o00"))
     verify(controller).uncoverField(0, 0)
-  }
-
-  it should "handle invalid user input gracefully" in {
-    val controller = mock[Controller]
-    val inputSource = new MockInputSource(List("x00"))
-    val tui = new TUI(controller, inputSource)
-    when(controller.game).thenReturn(mock[Game])
-    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
-    noException should be thrownBy tui.parseInputAndPrintLoop(List("x00"))
   }
 
   it should "handle flag command correctly" in {
@@ -77,4 +95,16 @@ class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
     when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     noException should be thrownBy tui.parseInputAndPrintLoop(List("q"))
   }
+
+  it should "handle valid user input using parseInputAndPrintLoop" in {
+    val controller = mock[Controller]
+    val inputSource = new MockInputSource(List("o00"))
+    val tui = new TUI(controller, inputSource)
+    when(controller.game).thenReturn(mock[Game])
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
+    tui.parseInputAndPrintLoop(List("o00"))
+    verify(controller).uncoverField(0, 0)
+  }
+
+
 }
