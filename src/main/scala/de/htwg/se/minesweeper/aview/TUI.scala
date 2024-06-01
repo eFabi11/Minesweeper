@@ -2,9 +2,11 @@ package de.htwg.se.minesweeper.aview
 
 import de.htwg.se.minesweeper.controller.Controller
 import de.htwg.se.minesweeper.util.Observer
-import de.htwg.se.minesweeper.model.{Move, Symbols, Status}
+import de.htwg.se.minesweeper.model.{Move, Status}
 import de.htwg.se.minesweeper.util.InputSource
 import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, EasyDifficulty, MediumDifficulty, HardDifficulty}
+
+import scala.util.{Try, Success, Failure}
 
 class TUI(controller: Controller, inputSource: InputSource) extends Observer {
 
@@ -38,30 +40,32 @@ class TUI(controller: Controller, inputSource: InputSource) extends Observer {
         input match {
             case "q" => None
             case _ =>
-                val action = if (input.startsWith("o")) "open" else "flag"
-                val xAxis = input.charAt(1).asDigit
-                val yAxis = input.charAt(2).asDigit
+                val action = if (input.startsWith("o")) "open" else if (input.startsWith("u")) "undo" else "flag"
+                val xAxis = if (action == "undo") 0 else input.charAt(1).asDigit
+                val yAxis = if (action == "undo") 0 else input.charAt(2).asDigit
                 Some(Move(action, xAxis, yAxis))
         }
     }
 
     private def parseInputAndPrintLoop(): Unit = {
-        println("Enter your move (format: oXY to open, fXY to flag, q to quit):")
+        println("Enter your move (format: oXY to open, fXY to flag, u to undo, q to quit):")
         val input = inputSource.readLine()
-        userIn2(input) match {
-            case None => System.exit(0)
-            case Some(move) =>
-                if (move.value == "open") {
-                    controller.uncoverField(move.x, move.y)
-                } else if (move.value == "flag") {
-                    controller.flagField(move.x, move.y)
+        Try(userIn2(input)) match {
+            case Success(Some(move)) =>
+                move.value match {
+                    case "open" => Try(controller.uncoverField(move.x, move.y))
+                    case "flag" => Try(controller.flagField(move.x, move.y))
+                    case "undo" => Try(controller.undo())
+                    case _ => println("Invalid command")
                 }
-                if (controller.game.gameState == Status.Lost || controller.game.gameState == Status.Won) {
-                    println("Spiel beendet. Status: " + controller.game.gameState)
-                    return
-                }
-                println(controller.field.toString())
-                parseInputAndPrintLoop()
+            case Success(None) => System.exit(0)
+            case Failure(exception) => println(s"Error: ${exception.getMessage}")
         }
+        if (controller.game.gameState == Status.Lost || controller.game.gameState == Status.Won) {
+            println("Spiel beendet. Status: " + controller.game.gameState)
+            return
+        }
+        println(controller.field.toString())
+        parseInputAndPrintLoop()
     }
 }

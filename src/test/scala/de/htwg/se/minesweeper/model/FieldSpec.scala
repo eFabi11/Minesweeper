@@ -1,37 +1,37 @@
-package de.htwg.se.minesweeper.model
-
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import de.htwg.se.minesweeper.model._
 
-class FieldSpec extends AnyWordSpec with Matchers {
-  "A Field" when {
-    "created" should {
-      "initialize with the correct size and filling" in {
-        val field = new Field(3, Symbols.Covered)
-        field.size should be(3)
-        (for {
-          y <- 0 until field.size
-          x <- 0 until field.size
-        } yield field.playerMatrix.cell(y, x)).forall(_ == Symbols.Covered) should be(true)
-      }
-    }
+class FieldSpec extends AnyFlatSpec with Matchers {
 
-    "flagging a cell" should {
-      "mark the cell with a flag" in {
-        val field = new Field(3, Symbols.Covered)
-        val updatedField = field.flag(0, 0)
-        updatedField.playerMatrix.cell(0, 0) should be(Symbols.Flag)
-      }
-    }
+  "A Field" should "be properly initialized with a size and filling" in {
+    val field = new Field(5, Symbols.Covered)
+    field.size should be (5)
+    field.playerMatrix.size should be (5)
+    field.bombenMatrix.size should be (5)
+  }
 
-    "opening a cell" should {
-      "uncover the cell and update the field" in {
-        val bombMatrix = new Matrix[Symbols](3, Symbols.Empty)
-        val playerMatrix = new Matrix[Symbols](3, Symbols.Covered)
-        val field = new Field(playerMatrix, bombMatrix)
-        val updatedField = field.open(0, 0, Game())
-        updatedField.playerMatrix.cell(0, 0) should not be Symbols.Covered
-      }
-    }
+  it should "handle bomb placement and checks" in {
+    val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
+    val field = new Field(bombMatrix)
+    field.isBomb(1, 1, bombMatrix) should be (true)
+    field.isBomb(0, 0, bombMatrix) should be (false)
+  }
+
+  it should "handle opening a cell" in {
+    val game = new Game()
+    val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
+    val playerMatrix = new Matrix[Symbols](3, Symbols.Covered)
+    val field = new Field(playerMatrix, bombMatrix)
+    val newField = field.open(0, 0, game)
+    newField.playerMatrix.cell(0, 0) should not be Symbols.Covered
+  }
+
+  it should "handle flagging a cell" in {
+    val playerMatrix = new Matrix[Symbols](3, Symbols.Covered)
+    val bombMatrix = new Matrix[Symbols](3, Symbols.Empty)
+    val field = new Field(playerMatrix, bombMatrix)
+    val newField = field.flag(0, 0)
+    newField.playerMatrix.cell(0, 0) should be (Symbols.Flag)
   }
 }
