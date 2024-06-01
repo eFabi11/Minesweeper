@@ -1,39 +1,33 @@
+package de.htwg.se.minesweeper.util
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import de.htwg.se.minesweeper.util.InputSource
+import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito._
 
-class MockInputSource extends InputSource {
-  private var inputs: List[String] = List()
-  
-  def setInputs(inputs: List[String]): Unit = {
-    this.inputs = inputs
-  }
-  
-  override def readLine(): String = {
-    if (inputs.nonEmpty) {
-      val input = inputs.head
-      inputs = inputs.tail
-      input
-    } else {
-      ""
-    }
-  }
-}
-
-class InputSourceSpec extends AnyFlatSpec with Matchers {
+class InputSourceSpec extends AnyFlatSpec with Matchers with MockitoSugar {
 
   "A MockInputSource" should "return the expected input" in {
-    val mockInputSource = new MockInputSource
-    mockInputSource.setInputs(List("test input"))
-    
-    val result = mockInputSource.readLine()
-    result should be ("test input")
+    val inputs = List("input1", "input2", "input3")
+    val mockInputSource = new MockInputSource(inputs)
+
+    mockInputSource.readLine() should be("input1")
+    mockInputSource.readLine() should be("input2")
+    mockInputSource.readLine() should be("input3")
   }
-  
-  it should "return empty string if no inputs are set" in {
-    val mockInputSource = new MockInputSource
-    
-    val result = mockInputSource.readLine()
-    result should be ("")
+
+  it should "return an empty string if no inputs are set" in {
+    val mockInputSource = new MockInputSource(Nil)
+
+    mockInputSource.readLine() should be("")
+  }
+
+  "A StdInInputSource" should "read input from standard input" in {
+    // Simulieren Sie die Benutzereingabe
+    val input = "testInput"
+    val stdIn = new java.io.ByteArrayInputStream(input.getBytes)
+    Console.withIn(stdIn) {
+      StdInInputSource.readLine() should be("testInput")
+    }
   }
 }
