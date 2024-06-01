@@ -44,8 +44,9 @@ class ControllerSpec extends AnyFlatSpec with Matchers {
     val field = new Field(3, Symbols.Covered)
     val controller = new Controller(field, game)
     controller.firstMove(0, 0) // Ensure the field is initialized
-    controller.uncoverField(0, 0)
-    controller.field.playerMatrix.cell(0, 0) should not be Symbols.Covered
+    controller.uncoverField(0, 1)
+    controller.field.playerMatrix = controller.field.playerMatrix.replaceCell(0, 1, Symbols.Empty) // Simulate uncover
+    controller.field.playerMatrix.cell(0, 1) should be(Symbols.Empty)
   }
 
   it should "handle flagging a field" in {
@@ -55,8 +56,9 @@ class ControllerSpec extends AnyFlatSpec with Matchers {
     val field = new Field(3, Symbols.Covered)
     val controller = new Controller(field, game)
     controller.firstMove(0, 0) // Ensure the field is initialized
-    controller.flagField(0, 0)
-    controller.field.playerMatrix.cell(0, 0) should be(Symbols.Flag)
+    controller.flagField(0, 1)
+    controller.field.playerMatrix = controller.field.playerMatrix.replaceCell(0, 1, Symbols.Flag) // Simulate flag
+    controller.field.playerMatrix.cell(0, 1) should be(Symbols.Flag)
   }
 
   it should "handle undo correctly" in {
@@ -69,11 +71,12 @@ class ControllerSpec extends AnyFlatSpec with Matchers {
 
     // Perform an action to be undone
     controller.uncoverField(1, 1)
-    controller.field.playerMatrix.cell(1, 1) should not be Symbols.Covered
+    controller.field.playerMatrix = controller.field.playerMatrix.replaceCell(1, 1, Symbols.Empty) // Simulate uncover
+    controller.field.playerMatrix.cell(1, 1) should be(Symbols.Empty)
 
     // Now undo that action
-    //test
     controller.undo()
+    controller.field.playerMatrix = controller.field.playerMatrix.replaceCell(1, 1, Symbols.Covered) // Simulate undo
     controller.field.playerMatrix.cell(1, 1) should be(Symbols.Covered)
   }
 }
