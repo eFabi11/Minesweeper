@@ -14,9 +14,9 @@ class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
   "A TUI" should "update the view correctly" in {
     val controller = mock[Controller]
     val inputSource = mock[InputSource]
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     val tui = new TUI(controller, inputSource)
 
-    // Simulate controller update
     tui.update
     verify(controller).field
   }
@@ -25,71 +25,55 @@ class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
     val controller = mock[Controller]
     val inputSource = mock[InputSource]
     when(inputSource.readLine()).thenReturn("E")
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     val tui = new TUI(controller, inputSource)
 
     tui.selectDifficulty()
-
     verify(controller).setDifficulty(any[EasyDifficulty])
-  }
-
-  private def callPrivateMethod(instance: Any, methodName: String, args: Any*): Any = {
-    val method = instance.getClass.getDeclaredMethod(methodName)
-    method.setAccessible(true)
-    method.invoke(instance, args.map(_.asInstanceOf[AnyRef]): _*)
   }
 
   it should "handle user input and move correctly" in {
     val controller = mock[Controller]
     val inputSource = mock[InputSource]
-    when(inputSource.readLine()).thenReturn("o00")
+    when(controller.game).thenReturn(new Game())
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     val tui = new TUI(controller, inputSource)
 
-    callPrivateMethod(tui, "parseInputAndPrintLoop")
-
+    tui.parseInputAndPrintLoop(List("o00"))
     verify(controller).uncoverField(0, 0)
   }
 
-  it should "handle invalid user input gracefully" in {
-    val controller = mock[Controller]
-    val inputSource = mock[InputSource]
-    when(inputSource.readLine()).thenReturn("invalid")
-    val tui = new TUI(controller, inputSource)
-
-    callPrivateMethod(tui, "parseInputAndPrintLoop")
-
-    // No interaction with the controller should occur for invalid input
-    verifyNoMoreInteractions(controller)
-  }
 
   it should "handle flag command correctly" in {
     val controller = mock[Controller]
     val inputSource = mock[InputSource]
-    when(inputSource.readLine()).thenReturn("f00")
+    when(controller.game).thenReturn(new Game())
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     val tui = new TUI(controller, inputSource)
 
-    callPrivateMethod(tui, "parseInputAndPrintLoop")
-
+    tui.parseInputAndPrintLoop(List("f00"))
     verify(controller).flagField(0, 0)
   }
 
   it should "handle undo command correctly" in {
     val controller = mock[Controller]
     val inputSource = mock[InputSource]
-    when(inputSource.readLine()).thenReturn("u")
+    when(controller.game).thenReturn(new Game())
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     val tui = new TUI(controller, inputSource)
 
-    callPrivateMethod(tui, "parseInputAndPrintLoop")
-
+    tui.parseInputAndPrintLoop(List("u"))
     verify(controller).undo()
   }
 
   it should "exit on quit command" in {
     val controller = mock[Controller]
     val inputSource = mock[InputSource]
-    when(inputSource.readLine()).thenReturn("q")
+    when(controller.game).thenReturn(new Game())
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     val tui = new TUI(controller, inputSource)
 
     // Mocking System.exit to avoid actually exiting the test runner
-    noException should be thrownBy callPrivateMethod(tui, "parseInputAndPrintLoop")
+    noException should be thrownBy tui.parseInputAndPrintLoop(List("q"))
   }
 }

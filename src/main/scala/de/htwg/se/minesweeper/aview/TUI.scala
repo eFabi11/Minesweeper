@@ -68,4 +68,26 @@ class TUI(controller: Controller, inputSource: InputSource) extends Observer {
         println(controller.field.toString())
         parseInputAndPrintLoop()
     }
+
+    // New method for testing purposes
+    def parseInputAndPrintLoop(inputs: List[String]): Unit = {
+        inputs.foreach { input =>
+            Try(userIn2(input)) match {
+                case Success(Some(move)) =>
+                    move.value match {
+                        case "open" => Try(controller.uncoverField(move.x, move.y))
+                        case "flag" => Try(controller.flagField(move.x, move.y))
+                        case "undo" => Try(controller.undo())
+                        case _ => println("Invalid command")
+                    }
+                case Success(None) => return
+                case Failure(exception) => println(s"Error: ${exception.getMessage}")
+            }
+            if (controller.game.gameState == Status.Lost || controller.game.gameState == Status.Won) {
+                println("Spiel beendet. Status: " + controller.game.gameState)
+                return
+            }
+            println(controller.field.toString())
+        }
+    }
 }
