@@ -1,12 +1,15 @@
 package de.htwg.se.minesweeper.controller
 
-import de.htwg.se.minesweeper.model.{Field, Move, Game, Symbols, Status}
+import de.htwg.se.minesweeper.command.{Command, UncoverCommand, FlagCommand}
+import de.htwg.se.minesweeper.model.{Field, Game, Status, Symbols}
 import de.htwg.se.minesweeper.util.Observable
-import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, DifficultyLevels}
+import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
+
+import scala.collection.mutable.Stack
 
 case class Controller(var field: Field, game: Game) extends Observable {
-
     var isFirstMove: Boolean = true
+    private val undoStack: Stack[Command] = Stack()
 
     def initializeField(): Unit = {
         field = new Field(game.gridSize, Symbols.Covered)
@@ -19,24 +22,11 @@ case class Controller(var field: Field, game: Game) extends Observable {
     }
 
     def uncoverField(x: Int, y: Int): Unit = {
-        if (game.gameState == Status.Playing) {
-            if (isFirstMove) {
-                firstMove(x, y)
-                isFirstMove = false
-            } else if (field.playerMatrix.cell(y, x) == Symbols.Covered) {
-                field = field.open(x, y, game)
-                checkGameState()
-                notifyObservers
-            }
-        }
+        executeCommand(new UncoverCommand(this, x, y))
     }
 
     def flagField(x: Int, y: Int): Unit = {
-        if (game.gameState == Status.Playing) {
-            field = field.flag(x, y)
-            checkGameState()
-            notifyObservers
-        }
+        executeCommand(new FlagCommand(this, x, y))
     }
 
     def setDifficulty(strategy: DifficultyStrategy): Unit = {
@@ -49,6 +39,20 @@ case class Controller(var field: Field, game: Game) extends Observable {
         game.checkGameState(field)
         if (game.gameState == Status.Won || game.gameState == Status.Lost) {
             println("Spiel beendet. Status: " + game.gameState)
+        }
+    }
+
+    private def executeCommand(command: Command): Unit = {
+        command.execute()
+        undoStack.push(command)
+    }
+
+    def undo(): Unit = {
+        if (undoStack.nonEmpty) {
+            val command = undoStack.pop()
+            command.undo()
+        } else {
+            println("Nothing to undo")
         }
     }
 

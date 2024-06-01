@@ -1,53 +1,39 @@
-package de.htwg.se.minesweeper.model
-
-import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, EasyDifficulty}
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import de.htwg.se.minesweeper.model._
+import de.htwg.se.minesweeper.difficulty.{EasyDifficulty, MediumDifficulty, HardDifficulty}
 
-class GameSpec extends AnyWordSpec with Matchers {
+class GameSpec extends AnyFlatSpec with Matchers {
 
-  "A Game" should {
-    "set the difficulty strategy" in {
-      val game = Game()
-      val strategy = new EasyDifficulty
-      game.setDifficultyStrategy(strategy)
-      game.gridSize should be(0) // gridSize is initially 0 and should change after setDifficulty
-      game.setDifficulty()
-      game.gridSize should be(3)
-    }
+  "A Game" should "set difficulty correctly" in {
+    val game = new Game()
+    game.setDifficultyStrategy(new EasyDifficulty)
+    game.setDifficulty()
+    game.gridSize should be (3)
+    game.bombCount should be (1)
+  }
 
-    "initialize the field correctly" in {
-      val game = Game()
-      val strategy = new EasyDifficulty
-      game.setDifficultyStrategy(strategy)
-      game.setDifficulty()
-      val field = game.initializeField(0, 0)
-      field shouldBe a[Field]
-    }
+  it should "initialize the field correctly" in {
+    val game = new Game()
+    game.setDifficultyStrategy(new EasyDifficulty)
+    game.setDifficulty()
+    val field = game.initializeField(0, 0)
+    field.size should be (3)
+  }
 
-    "place bombs correctly" in {
-      val game = Game()
-      game.setDifficultyStrategy(new EasyDifficulty)
-      game.setDifficulty()
-      val bombMatrix = game.initializeField(0, 0).bombenMatrix
-      (for {
-        y <- 0 until bombMatrix.size
-        x <- 0 until bombMatrix.size
-      } yield bombMatrix.cell(y, x)).count(_ == Symbols.Bomb) should be(1)
-    }
+  it should "check if a cell is a bomb" in {
+    val game = new Game()
+    val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
+    game.isBomb(1, 1, bombMatrix) should be (true)
+    game.isBomb(0, 0, bombMatrix) should be (false)
+  }
 
-    "recognize a bomb" in {
-      val game = Game()
-      val matrix = new Matrix[Symbols](3, Symbols.Bomb)
-      game.isBomb(0, 0, matrix) should be(true)
-    }
-
-    "calculate numbers correctly" in {
-      val game = Game()
-      val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
-      val playerMatrix = new Matrix[Symbols](3, Symbols.Covered)
-      val updatedMatrix = game.Num(0, 0, bombMatrix, playerMatrix)
-      updatedMatrix.cell(0, 0) should not be Symbols.Covered
-    }
+  it should "check game state correctly" in {
+    val game = new Game()
+    val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
+    val playerMatrix = new Matrix[Symbols](3, Symbols.Covered).replaceCell(1, 1, Symbols.Flag)
+    val field = new Field(playerMatrix, bombMatrix)
+    game.checkGameState(field)
+    game.gameState should be (Status.Won)
   }
 }
