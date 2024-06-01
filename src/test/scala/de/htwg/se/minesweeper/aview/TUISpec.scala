@@ -40,7 +40,14 @@ class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
     verify(controller).uncoverField(0, 0)
   }
 
-
+  it should "handle invalid user input gracefully" in {
+    val controller = mock[Controller]
+    val inputSource = new MockInputSource(List("x00"))
+    val tui = new TUI(controller, inputSource)
+    when(controller.game).thenReturn(mock[Game])
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
+    noException should be thrownBy tui.parseInputAndPrintLoop(List("x00"))
+  }
 
   it should "handle flag command correctly" in {
     val controller = mock[Controller]

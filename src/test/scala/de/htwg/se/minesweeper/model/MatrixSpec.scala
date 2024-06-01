@@ -1,47 +1,61 @@
 package de.htwg.se.minesweeper.model
 
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
-class MatrixSpec extends AnyWordSpec with Matchers {
-  "A Matrix" when {
-    "new" should {
-      "be created with a specified dimension and a filling element" in {
-        val matrix = new Matrix(3, Symbols.Empty)
-        matrix.size should be(3)
-        (for {
-          y <- 0 until matrix.size
-          x <- 0 until matrix.size
-        } yield matrix.cell(y, x)).forall(_ == Symbols.Empty) should be(true)
-      }
+class MatrixSpec extends AnyFlatSpec with Matchers {
 
-      "be created from a Vector of Vectors" in {
-        val vector = Vector(Vector(Symbols.Empty, Symbols.Empty), Vector(Symbols.Empty, Symbols.Empty))
-        val matrix = new Matrix(vector)
-        matrix.size should be(2)
-        (for {
-          y <- 0 until matrix.size
-          x <- 0 until matrix.size
-        } yield matrix.cell(y, x)).forall(_ == Symbols.Empty) should be(true)
-      }
-    }
+  "A Matrix" should "be created with a specified dimension and a filling element" in {
+    val size = 3
+    val filling = 0
+    val matrix = Matrix(Vector.tabulate(size, size)((_, _) => filling))
+    for {
+      row <- 0 until size
+      col <- 0 until size
+    } yield matrix.cell(row, col) should be(filling)
+  }
 
-    "filled with elements" should {
-      "allow access to its cells" in {
-        val matrix = new Matrix(3, Symbols.Empty)
-        matrix.cell(0, 0) should be(Symbols.Empty)
-      }
+  it should "be created from a Vector of Vectors" in {
+    val rows = Vector(Vector(1, 2, 3), Vector(4, 5, 6), Vector(7, 8, 9))
+    val matrix = Matrix(rows)
+    for {
+      row <- 0 until 3
+      col <- 0 until 3
+    } yield matrix.cell(row, col) should be(rows(row)(col))
+  }
 
-      "allow replacing a cell and return a new Matrix" in {
-        val matrix = new Matrix(3, Symbols.Empty)
-        val newMatrix = matrix.replaceCell(0, 0, Symbols.Bomb)
-        newMatrix.cell(0, 0) should be(Symbols.Bomb)
-      }
+  it should "return the correct cell when accessed" in {
+    val rows = Vector(Vector(1, 2, 3), Vector(4, 5, 6), Vector(7, 8, 9))
+    val matrix = Matrix(rows)
+    matrix.cell(0, 0) should be(1)
+    matrix.cell(1, 1) should be(5)
+    matrix.cell(2, 2) should be(9)
+  }
 
-      "return the correct row when accessed" in {
-        val matrix = new Matrix(3, Symbols.Empty)
-        matrix.row(0) should be(Vector(Symbols.Empty, Symbols.Empty, Symbols.Empty))
-      }
-    }
+  it should "allow replacing a cell and return a new Matrix" in {
+    val rows = Vector(Vector(1, 2, 3), Vector(4, 5, 6), Vector(7, 8, 9))
+    val matrix = Matrix(rows)
+    val newMatrix = matrix.replaceCell(1, 1, 42)
+    newMatrix.cell(1, 1) should be(42)
+    matrix.cell(1, 1) should be(5) // Original matrix should remain unchanged
+  }
+
+  it should "return the correct row when accessed" in {
+    val rows = Vector(Vector(1, 2, 3), Vector(4, 5, 6), Vector(7, 8, 9))
+    val matrix = Matrix(rows)
+    matrix.row(0) should be(Vector(1, 2, 3))
+    matrix.row(1) should be(Vector(4, 5, 6))
+    matrix.row(2) should be(Vector(7, 8, 9))
+  }
+
+  it should "fill the matrix with a specified filling element" in {
+    val size = 3
+    val filling = 42
+    val matrix = Matrix(Vector.tabulate(size, size)((_, _) => 0))
+    val filledMatrix = matrix.fill(filling)
+    for {
+      row <- 0 until size
+      col <- 0 until size
+    } yield filledMatrix.cell(row, col) should be(filling)
   }
 }
