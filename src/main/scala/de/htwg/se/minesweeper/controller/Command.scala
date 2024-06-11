@@ -20,12 +20,12 @@ class UncoverCommand(controller: Controller, x: Int, y: Int) extends Command {
             controller.field = controller.field.open(x, y, controller.game)
             controller.checkGameState()
         }
-        controller.notifyObservers
+        controller.notifyObservers()
     }
 
     override def undo(): Unit = {
         previousState.foreach(state => controller.field = state)
-        controller.notifyObservers
+        controller.notifyObservers()
     }
 }
 
@@ -36,11 +36,11 @@ class FlagCommand(controller: Controller, x: Int, y: Int) extends Command {
         previousState = Some(controller.field.copy())
         controller.field = controller.field.flag(x, y)
         controller.checkGameState()
-        controller.notifyObservers
+        controller.notifyObservers()
     }
 
     override def undo(): Unit = {
         previousState.foreach(state => controller.field = state)
-        controller.notifyObservers
+        controller.notifyObservers()
     }
 }

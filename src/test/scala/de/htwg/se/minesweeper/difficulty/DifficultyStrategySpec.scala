@@ -1,25 +1,41 @@
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
-import de.htwg.se.minesweeper.difficulty._
+package de.htwg.se.minesweeper.difficulty
+
 import de.htwg.se.minesweeper.model.Game
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class DifficultyStrategySpec extends AnyFlatSpec with Matchers {
+class DifficultyStrategySpec extends AnyWordSpec with Matchers {
 
-  "A MediumDifficulty" should "set the game to medium difficulty" in {
-    val game = new Game()
-    val strategy = new MediumDifficulty
+  "An EasyDifficulty strategy" should {
+    val game = Game()
+    val strategy = new EasyDifficulty
     strategy.setDifficulty(game)
-    
-    game.gridSize should be(9)
-    game.bombCount should be(6)
+
+    "set the correct grid size and bomb count" in {
+      game.gridSize should be(3)
+      game.bombCount should be(1)
+    }
   }
 
-  "A HardDifficulty" should "set the game to hard difficulty" in {
-    val game = new Game()
+  "A MediumDifficulty strategy" should {
+    val game = Game()
+    val strategy = new MediumDifficulty
+    strategy.setDifficulty(game)
+
+    "set the correct grid size and bomb count" in {
+      game.gridSize should be(9)
+      game.bombCount should be(6)
+    }
+  }
+
+  "A HardDifficulty strategy" should {
+    val game = Game()
     val strategy = new HardDifficulty
     strategy.setDifficulty(game)
-    
-    game.gridSize should be(16)
-    game.bombCount should be(40)
+
+    "set the correct grid size and bomb count" in {
+      game.gridSize should be(16)
+      game.bombCount should be(40)
+    }
   }
 }

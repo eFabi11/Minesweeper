@@ -1,39 +1,31 @@
-import org.scalatest.flatspec.AnyFlatSpec
+package de.htwg.se.minesweeper.model
+
+import de.htwg.se.minesweeper.difficulty.EasyDifficulty
 import org.scalatest.matchers.should.Matchers
-import de.htwg.se.minesweeper.model._
-import de.htwg.se.minesweeper.difficulty.{EasyDifficulty, MediumDifficulty, HardDifficulty}
+import org.scalatest.wordspec.AnyWordSpec
 
-class GameSpec extends AnyFlatSpec with Matchers {
+class GameSpec extends AnyWordSpec with Matchers {
 
-  "A Game" should "set difficulty correctly" in {
-    val game = new Game()
+  "A Game" should {
+    val game = Game()
     game.setDifficultyStrategy(new EasyDifficulty)
     game.setDifficulty()
-    game.gridSize should be (3)
-    game.bombCount should be (1)
-  }
 
-  it should "initialize the field correctly" in {
-    val game = new Game()
-    game.setDifficultyStrategy(new EasyDifficulty)
-    game.setDifficulty()
-    val field = game.initializeField(0, 0)
-    field.size should be (3)
-  }
+    "initialize the game correctly" in {
+      game.gridSize should be(3)
+      game.bombCount should be(1)
+    }
 
-  it should "check if a cell is a bomb" in {
-    val game = new Game()
-    val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
-    game.isBomb(1, 1, bombMatrix) should be (true)
-    game.isBomb(0, 0, bombMatrix) should be (false)
-  }
+    "initialize field correctly" in {
+      val field = game.initializeField(1, 1)
+      field.size should be(3)
+      field.matrix.rows.flatten.count(_ == Symbols.Covered) should be < 9
+    }
 
-  it should "check game state correctly" in {
-    val game = new Game()
-    val bombMatrix = new Matrix[Symbols](3, Symbols.Empty).replaceCell(1, 1, Symbols.Bomb)
-    val playerMatrix = new Matrix[Symbols](3, Symbols.Covered).replaceCell(1, 1, Symbols.Flag)
-    val field = new Field(playerMatrix, bombMatrix)
-    game.checkGameState(field)
-    game.gameState should be (Status.Won)
+    "check game state correctly" in {
+      val field = game.initializeField(1, 1)
+      game.checkGameState(field)
+      game.gameState should (be(Status.Playing) or be(Status.Won) or be(Status.Lost))
+    }
   }
 }

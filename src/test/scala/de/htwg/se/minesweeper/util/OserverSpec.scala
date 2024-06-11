@@ -1,41 +1,39 @@
 package de.htwg.se.minesweeper.util
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatestplus.mockito.MockitoSugar
-import org.mockito.Mockito._
+import org.scalatest.wordspec.AnyWordSpec
 
-class ObservableSpec extends AnyWordSpec with Matchers with MockitoSugar {
+class ObservableSpec extends AnyWordSpec with Matchers {
 
   "An Observable" should {
-    "allow observers to be added" in {
-      val observable = new Observable {}
-      val observer = mock[Observer]
-
-      observable.add(observer)
-      observable.subscribers should contain(observer)
+    val observable = new Observable {}
+    var observer1Updated = false
+    val observer1 = new Observer {
+      override def update(): Unit = observer1Updated = true
+    }
+    var observer2Updated = false
+    val observer2 = new Observer {
+      override def update(): Unit = observer2Updated = true
     }
 
-    "allow observers to be removed" in {
-      val observable = new Observable {}
-      val observer = mock[Observer]
-
-      observable.add(observer)
-      observable.remove(observer)
-      observable.subscribers should not contain observer
-    }
-
-    "notify all observers when notifyObservers is called" in {
-      val observable = new Observable {}
-      val observer1 = mock[Observer]
-      val observer2 = mock[Observer]
-
+    "add and notify observers" in {
       observable.add(observer1)
       observable.add(observer2)
-      observable.notifyObservers
 
-      verify(observer1).update
-      verify(observer2).update
+      observable.notifyObservers()
+
+      observer1Updated should be(true)
+      observer2Updated should be(true)
+    }
+
+    "remove observers" in {
+      observable.remove(observer1)
+      observer1Updated = false
+
+      observable.notifyObservers()
+
+      observer1Updated should be(false)
+      observer2Updated should be(true)
     }
   }
 }
