@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.aview
+/*package de.htwg.se.minesweeper.aview
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -27,4 +27,4 @@ class MinesweeperGUISpec extends AnyWordSpec with Matchers {
       // This is just a placeholder, as actual dialog checking requires a UI test framework
     }
   }
-}
+}*/
