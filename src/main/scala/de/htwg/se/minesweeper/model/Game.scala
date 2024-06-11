@@ -23,7 +23,7 @@ case class Game() {
 
     def initializeField(x: Int, y: Int): Field = {
         val bombenMatrix = setBombs(new Matrix(gridSize, Symbols.Empty), bombCount, x, y)
-        val playerMatrix = Num(x, y, bombenMatrix, new Matrix(gridSize, Symbols.Covered))
+        val playerMatrix = openCells(x, y, bombenMatrix, new Matrix(gridSize, Symbols.Covered))
         new Field(playerMatrix, bombenMatrix)
     }
 
@@ -47,17 +47,17 @@ case class Game() {
     def isBomb(x: Int, y: Int, m: Matrix[Symbols]): Boolean = {
         val si = m.size - 1
         if (inArea(x, y, si)) {
-            if (m.cell(y, x) == Symbols.Bomb) true else false
+            m.cell(y, x) == Symbols.Bomb
         } else false
     }
 
     def inArea(x: Int, y: Int, side: Int): Boolean = x >= 0 && x <= side && y >= 0 && y <= side
 
-    def Num(x: Int, y: Int, bMatrix: Matrix[Symbols], pMatrix: Matrix[Symbols]): Matrix[Symbols] = {
+    def openCells(x: Int, y: Int, bMatrix: Matrix[Symbols], pMatrix: Matrix[Symbols]): Matrix[Symbols] = {
         var tmpMatrix = pMatrix
         val si = bMatrix.size - 1
 
-        if (!(inArea(x, y, si)) || pMatrix.cell(y, x) != Symbols.Covered) return pMatrix
+        if (!inArea(x, y, si) || pMatrix.cell(y, x) != Symbols.Covered) return pMatrix
 
         var minesFound = 0
         if (isBomb(x + 1, y + 1, bMatrix)) minesFound += 1
@@ -71,14 +71,9 @@ case class Game() {
 
         if (minesFound == 0) {
             tmpMatrix = tmpMatrix.replaceCell(y, x, Symbols.Empty)
-            if (inArea(x + 1, y + 1, si)) tmpMatrix = Num(x + 1, y + 1, bMatrix, tmpMatrix)
-            if (inArea(x, y + 1, si)) tmpMatrix = Num(x, y + 1, bMatrix, tmpMatrix)
-            if (inArea(x - 1, y + 1, si)) tmpMatrix = Num(x - 1, y + 1, bMatrix, tmpMatrix)
-            if (inArea(x + 1, y, si)) tmpMatrix = Num(x + 1, y, bMatrix, tmpMatrix)
-            if (inArea(x - 1, y, si)) tmpMatrix = Num(x - 1, y, bMatrix, tmpMatrix)
-            if (inArea(x + 1, y - 1, si)) tmpMatrix = Num(x + 1, y - 1, bMatrix, tmpMatrix)
-            if (inArea(x, y - 1, si)) tmpMatrix = Num(x, y - 1, bMatrix, tmpMatrix)
-            if (inArea(x - 1, y - 1, si)) tmpMatrix = Num(x - 1, y - 1, bMatrix, tmpMatrix)
+            for (dx <- -1 to 1; dy <- -1 to 1 if !(dx == 0 && dy == 0)) {
+                tmpMatrix = openCells(x + dx, y + dy, bMatrix, tmpMatrix)
+            }
         } else {
             val symb = Symbols.fromInt(minesFound)
             tmpMatrix = tmpMatrix.replaceCell(y, x, symb)
@@ -87,7 +82,7 @@ case class Game() {
     }
 
     def checkGameState(field: Field): Unit = {
-        val allBombsFlagged = field.playerMatrix.rows.zip(field.bombenMatrix.rows).forall {
+        val allBombsFlagged = field.matrix.rows.zip(field.bomben.rows).forall {
             case (playerRow, bombRow) =>
                 playerRow.zip(bombRow).forall {
                     case (playerCell, bombCell) =>

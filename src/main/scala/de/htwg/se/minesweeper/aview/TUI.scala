@@ -10,7 +10,7 @@ import scala.util.{Try, Success, Failure}
 
 class TUI(controller: Controller, inputSource: InputSource) extends Observer {
 
-    override def update: Unit = println(controller.field.toString())
+    override def update(): Unit = println(controller.field.toString())
 
     def run(): Unit = {
         selectDifficulty()
