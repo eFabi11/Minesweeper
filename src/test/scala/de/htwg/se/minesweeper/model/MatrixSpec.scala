@@ -31,6 +31,32 @@ class MatrixTest extends AnyWordSpec with Matchers {
       matrix.row(2) should be(Vector(7, 8, 9))
     }
 
+    "have a working fill method" in {
+      val matrix = Matrix(Vector(
+        Vector(1, 2, 3),
+        Vector(4, 5, 6),
+        Vector(7, 8, 9)
+      ))
+      val filledMatrix = matrix.fill(0)
+
+      filledMatrix.row(0) should be(Vector(0, 0, 0))
+      filledMatrix.row(1) should be(Vector(0, 0, 0))
+      filledMatrix.row(2) should be(Vector(0, 0, 0))
+    }
+
+    "have a working replaceCell method" in {
+      val matrix = Matrix(Vector(
+        Vector(1, 2, 3),
+        Vector(4, 5, 6),
+        Vector(7, 8, 9)
+      ))
+      val updatedMatrix = matrix.replaceCell(0, 0, 0)
+
+      updatedMatrix.cell(0, 0) should be(0)
+      updatedMatrix.cell(1, 1) should be(5)
+      updatedMatrix.cell(2, 2) should be(9)
+    }
+
     "throw an IndexOutOfBoundsException for invalid indices" in {
       val matrix = Matrix(Vector(
         Vector(1, 2, 3),
