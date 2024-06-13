@@ -67,5 +67,13 @@ class MatrixTest extends AnyWordSpec with Matchers {
       an[IndexOutOfBoundsException] should be thrownBy matrix.cell(3, 3)
       an[IndexOutOfBoundsException] should be thrownBy matrix.row(3)
     }
+
+    "be initialized with a size and a filling value" in {
+      val matrix = new Matrix[Int](2, 0)
+
+      matrix.cell(0, 0) should be(0)
+      matrix.cell(1, 1) should be(0)
+      matrix.size should be(2)
+    }
   }
 }
