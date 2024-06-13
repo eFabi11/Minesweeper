@@ -1,7 +1,6 @@
-// src/test/scala/de/htwg/se/minesweeper/util/MockInputSource.scala
 package de.htwg.se.minesweeper.util
 
-class MockInputSource(inputs: List[String]) extends InputSource {
+class MockInputSource(var inputs: List[String]) extends InputSource {
   private var inputsIterator = inputs.iterator
 
   override def readLine(): String = {
@@ -10,5 +9,10 @@ class MockInputSource(inputs: List[String]) extends InputSource {
     } else {
       ""
     }
+  }
+
+  def setInputs(newInputs: List[String]): Unit = {
+    inputs = newInputs
+    inputsIterator = inputs.iterator
   }
 }
