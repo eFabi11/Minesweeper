@@ -1,14 +1,22 @@
 package de.htwg.se.minesweeper.controller
 
-import de.htwg.se.minesweeper.model.{Field, Move, Game, Symbols, Status}
+import de.htwg.se.minesweeper.interfaces.{IController, ICommand}
+import de.htwg.se.minesweeper.model.{Field, Game, Symbols, Status}
 import de.htwg.se.minesweeper.util.Observable
-import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, DifficultyLevels}
-import de.htwg.se.minesweeper.command.{Command, UncoverCommand, FlagCommand}
+import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
+import de.htwg.se.minesweeper.command.{UncoverCommand, FlagCommand}
 
-case class Controller(var field: Field, game: Game) extends Observable {
-
-  private var undoStack: List[Command] = Nil
+class Controller(var field: Field, var game: Game) extends Observable with IController {
+  private var undoStack: List[ICommand] = Nil
   var isFirstMove: Boolean = true
+
+  def setFirstMove(value: Boolean): Unit = {
+    isFirstMove = value
+  }
+
+  def setField(newField: Field): Unit = {
+    field = newField
+  }
 
   def initializeField(): Unit = {
     field = new Field(game.gridSize, Symbols.Covered)
@@ -43,7 +51,7 @@ case class Controller(var field: Field, game: Game) extends Observable {
     }
   }
 
-  def executeCommand(command: Command): Unit = {
+  def executeCommand(command: ICommand): Unit = {
     command.execute()
     undoStack = command :: undoStack
   }
