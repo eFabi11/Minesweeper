@@ -2,7 +2,7 @@ package de.htwg.se.minesweeper.aview
 
 import de.htwg.se.minesweeper.controller.Controller
 import de.htwg.se.minesweeper.util.Observer
-import de.htwg.se.minesweeper.model.{Symbols, Status}
+import de.htwg.se.minesweeper.model.{Symbols, Status, Field}
 import scala.swing._
 import scala.swing.event._
 import java.awt.event.{MouseEvent => AwtMouseEvent}
@@ -83,19 +83,19 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
           }
         }
 
-        controller.field.cell(row, col) match {
+        controller.field.asInstanceOf[Field].cell(row, col) match { // Cast to Field
           case Symbols.Covered => button.background = java.awt.Color.GREEN
           case Symbols.Flag => button.background = java.awt.Color.BLUE
           case Symbols.Empty => button.background = java.awt.Color.GRAY
           case Symbols.Bomb =>
-            if (controller.field.cell(row, col) == Symbols.Bomb && controller.game.gameState == Status.Lost) {
+            if (controller.field.asInstanceOf[Field].cell(row, col) == Symbols.Bomb && controller.game.gameState == Status.Lost) {
               button.background = java.awt.Color.RED
             } else {
               button.background = java.awt.Color.BLACK
             }
           case _ =>
             button.background = java.awt.Color.LIGHT_GRAY
-            button.text = controller.field.cell(row, col).toString
+            button.text = controller.field.asInstanceOf[Field].cell(row, col).toString
         }
 
         gridPanel.contents += button
@@ -118,7 +118,7 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
 
   override def update(): Unit = {
     refreshGrid()
-    flagLabel.text = s"Flags: ${controller.field.matrix.rows.flatten.count(_ == Symbols.Flag)}"
+    flagLabel.text = s"Flags: ${controller.field.asInstanceOf[Field].matrix.rows.flatten.count(_ == Symbols.Flag)}" // Cast to Field
     
     if (controller.game.gameState == Status.Won || controller.game.gameState == Status.Lost) {
       showEndGameDialog(controller.game.gameState)
