@@ -1,14 +1,14 @@
 package de.htwg.se.minesweeper.aview
 
+import de.htwg.se.minesweeper.controller.Controller
+import de.htwg.se.minesweeper.util.MockInputSource
+import de.htwg.se.minesweeper.model._
+import de.htwg.se.minesweeper.difficulty.{EasyDifficulty, MediumDifficulty, HardDifficulty}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
-import de.htwg.se.minesweeper.controller.Controller
-import de.htwg.se.minesweeper.model._
-import de.htwg.se.minesweeper.difficulty._
-import de.htwg.se.minesweeper.util.MockInputSource
 
 class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
 
@@ -104,5 +104,17 @@ class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
     when(controller.field).thenReturn(new Field(3, Symbols.Covered))
     tui.parseInputAndPrintLoop(List("o00"))
     verify(controller).uncoverField(0, 0)
+  }
+
+  it should "handle the new method for testing purposes" in {
+    val controller = mock[Controller]
+    val inputSource = new MockInputSource(List("o00"))
+    val tui = new TUI(controller, inputSource)
+    when(controller.game).thenReturn(mock[Game])
+    when(controller.field).thenReturn(new Field(3, Symbols.Covered))
+    tui.parseInputAndPrintLoop(List("o00", "f11", "u", "q"))
+    verify(controller).uncoverField(0, 0)
+    verify(controller).flagField(1, 1)
+    verify(controller).undo()
   }
 }
