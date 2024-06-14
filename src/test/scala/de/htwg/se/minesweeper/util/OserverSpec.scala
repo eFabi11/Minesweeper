@@ -6,17 +6,22 @@ import org.scalatest.wordspec.AnyWordSpec
 class ObservableSpec extends AnyWordSpec with Matchers {
 
   "An Observable" should {
-    val observable = new Observable {}
-    var observer1Updated = false
-    val observer1 = new Observer {
-      override def update(): Unit = observer1Updated = true
-    }
-    var observer2Updated = false
-    val observer2 = new Observer {
-      override def update(): Unit = observer2Updated = true
+    "initialize subscribers correctly" in {
+      val observable = new Observable {}
+      observable.subscribers shouldBe empty
     }
 
     "add and notify observers" in {
+      val observable = new Observable {}
+      var observer1Updated = false
+      val observer1 = new Observer {
+        override def update(): Unit = observer1Updated = true
+      }
+      var observer2Updated = false
+      val observer2 = new Observer {
+        override def update(): Unit = observer2Updated = true
+      }
+
       observable.add(observer1)
       observable.add(observer2)
 
@@ -27,8 +32,19 @@ class ObservableSpec extends AnyWordSpec with Matchers {
     }
 
     "remove observers" in {
+      val observable = new Observable {}
+      var observer1Updated = false
+      val observer1 = new Observer {
+        override def update(): Unit = observer1Updated = true
+      }
+      var observer2Updated = false
+      val observer2 = new Observer {
+        override def update(): Unit = observer2Updated = true
+      }
+
+      observable.add(observer1)
+      observable.add(observer2)
       observable.remove(observer1)
-      observer1Updated = false
 
       observable.notifyObservers()
 
