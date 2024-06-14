@@ -14,6 +14,7 @@ lazy val root = project
     
     libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.14",
     libraryDependencies += "org.scala-lang.modules" %% "scala-swing" % "3.0.0",
+    libraryDependencies += "com.google.inject" % "guice" % "5.0.1",
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.14" % Test,
       "org.mockito" % "mockito-core" % "5.3.1" % Test,

@@ -1,12 +1,13 @@
 package de.htwg.se.minesweeper.controller
 
-import de.htwg.se.minesweeper.interfaces.{IController, ICommand}
-import de.htwg.se.minesweeper.model.{Field, Game, Symbols, Status}
+import com.google.inject.Inject
+import de.htwg.se.minesweeper.interfaces.{IController, ICommand, IGame}
+import de.htwg.se.minesweeper.model.{Field, Symbols, Status}
 import de.htwg.se.minesweeper.util.Observable
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
 import de.htwg.se.minesweeper.command.{UncoverCommand, FlagCommand}
 
-class Controller(var field: Field, var game: Game) extends Observable with IController {
+class Controller @Inject() (var field: Field, var game: IGame) extends Observable with IController {
   private var undoStack: List[ICommand] = Nil
   var isFirstMove: Boolean = true
 

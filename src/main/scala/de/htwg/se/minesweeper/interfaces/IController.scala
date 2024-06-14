@@ -1,11 +1,11 @@
 package de.htwg.se.minesweeper.interfaces
 
-import de.htwg.se.minesweeper.model.{Field, Game}
+import de.htwg.se.minesweeper.model.Field
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
 
 trait IController {
   def field: Field
-  def game: Game
+  def game: IGame
   def isFirstMove: Boolean
   def setFirstMove(value: Boolean): Unit
 
@@ -19,7 +19,5 @@ trait IController {
   def undo(): Unit
   def restart(): Unit
   def notifyObservers(): Unit
-  
-  // Add the setField method
   def setField(newField: Field): Unit
 }
