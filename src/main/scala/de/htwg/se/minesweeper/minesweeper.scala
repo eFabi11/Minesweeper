@@ -3,7 +3,7 @@ package de.htwg.se.minesweeper
 import com.google.inject.Guice
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
 import de.htwg.se.minesweeper.controller.Controller
-import de.htwg.se.minesweeper.util.StdInInputSource
+import de.htwg.se.minesweeper.util.{FileIOInterface, FileIOJSON, StdInInputSource}
 
 object Minesweeper {
   def main(args: Array[String]): Unit = {
@@ -12,10 +12,11 @@ object Minesweeper {
     
     // Get instances from the injector
     val controller = injector.getInstance(classOf[Controller])
+    val fileIO = injector.getInstance(classOf[FileIOInterface])
     
     // Initialize TUI and GUI
     val tui = new TUI(controller, StdInInputSource)
-    val gui = new MinesweeperGUI(controller)
+    val gui = new MinesweeperGUI(controller, fileIO)
     
     gui.visible = true // Ensure GUI is visible
     tui.run()

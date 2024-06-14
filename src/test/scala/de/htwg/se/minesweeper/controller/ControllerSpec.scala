@@ -8,13 +8,15 @@ import org.mockito.ArgumentMatchers._
 import de.htwg.se.minesweeper.model._
 import de.htwg.se.minesweeper.difficulty._
 import de.htwg.se.minesweeper.command.{UncoverCommand, FlagCommand}
+import de.htwg.se.minesweeper.util.FileIOInterface
 
 class ControllerSpec extends AnyFlatSpec with Matchers with MockitoSugar {
 
   "A Controller" should "set the difficulty correctly" in {
     val field = mock[Field]
     val game = mock[Game]
-    val controller = new Controller(field, game)
+    val fileIO = mock[FileIOInterface]
+    val controller = new Controller(field, game, fileIO)
     val strategy = mock[DifficultyStrategy]
 
     controller.setDifficulty(strategy)
@@ -26,7 +28,8 @@ class ControllerSpec extends AnyFlatSpec with Matchers with MockitoSugar {
   it should "uncover a field correctly" in {
     val field = mock[Field]
     val game = mock[Game]
-    val controller = spy(new Controller(field, game))
+    val fileIO = mock[FileIOInterface]
+    val controller = spy(new Controller(field, game, fileIO))
 
     doNothing().when(controller).executeCommand(any[UncoverCommand])
 
@@ -38,7 +41,8 @@ class ControllerSpec extends AnyFlatSpec with Matchers with MockitoSugar {
   it should "flag a field correctly" in {
     val field = mock[Field]
     val game = mock[Game]
-    val controller = spy(new Controller(field, game))
+    val fileIO = mock[FileIOInterface]
+    val controller = spy(new Controller(field, game, fileIO))
 
     doNothing().when(controller).executeCommand(any[FlagCommand])
 
@@ -50,7 +54,8 @@ class ControllerSpec extends AnyFlatSpec with Matchers with MockitoSugar {
   it should "execute and undo commands correctly" in {
     val field = new Field(3, Symbols.Covered)
     val game = new Game()
-    val controller = new Controller(field, game)
+    val fileIO = mock[FileIOInterface]
+    val controller = new Controller(field, game, fileIO)
     val command = mock[UncoverCommand]
 
     controller.executeCommand(command)
@@ -63,11 +68,37 @@ class ControllerSpec extends AnyFlatSpec with Matchers with MockitoSugar {
   it should "restart the game correctly" in {
     val field = new Field(3, Symbols.Covered)
     val game = mock[Game]
-    val controller = spy(new Controller(field, game))
+    val fileIO = mock[FileIOInterface]
+    val controller = spy(new Controller(field, game, fileIO))
 
     controller.restart()
 
     verify(game, times(1)).gameState = Status.Playing
     verify(controller, times(1)).initializeField()
+  }
+
+  it should "save the game correctly" in {
+    val field = new Field(3, Symbols.Covered)
+    val game = mock[Game]
+    val fileIO = mock[FileIOInterface]
+    val controller = new Controller(field, game, fileIO)
+
+    controller.save()
+
+    verify(fileIO, times(1)).save(field)
+  }
+
+  it should "load the game correctly" in {
+    val field = new Field(3, Symbols.Covered)
+    val game = mock[Game]
+    val fileIO = mock[FileIOInterface]
+    val controller = new Controller(field, game, fileIO)
+
+    when(fileIO.load()).thenReturn(field)
+
+    controller.load()
+
+    verify(fileIO, times(1)).load()
+    controller.field should be(field)
   }
 }

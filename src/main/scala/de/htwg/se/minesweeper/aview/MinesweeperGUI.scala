@@ -1,13 +1,13 @@
 package de.htwg.se.minesweeper.aview
 
 import de.htwg.se.minesweeper.controller.Controller
-import de.htwg.se.minesweeper.util.Observer
+import de.htwg.se.minesweeper.util.{Observer, FileIOInterface}
 import de.htwg.se.minesweeper.model.{Symbols, Status, Field}
 import scala.swing._
 import scala.swing.event._
 import java.awt.event.{MouseEvent => AwtMouseEvent}
 
-class MinesweeperGUI(controller: Controller) extends Frame with Observer {
+class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Frame with Observer {
   controller.add(this)
   title = "Minesweeper"
   preferredSize = new Dimension(800, 600)
@@ -22,6 +22,8 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
   val undoButton: Button = new Button("Undo")
   val restartButton: Button = new Button("Restart")
   val exitButton: Button = new Button("Exit")
+  val saveButton: Button = new Button("Save State")
+  val loadButton: Button = new Button("Load State")
 
   val topPanel: FlowPanel = new FlowPanel {
     contents += difficultyComboBox
@@ -29,6 +31,8 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
     contents += timeLabel
     contents += undoButton
     contents += restartButton
+    contents += saveButton
+    contents += loadButton
     contents += exitButton
   }
 
@@ -39,7 +43,7 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
 
   contents = mainPanel
 
-  listenTo(difficultyComboBox.selection, undoButton, restartButton, exitButton)
+  listenTo(difficultyComboBox.selection, undoButton, restartButton, exitButton, saveButton, loadButton)
   reactions += {
     case SelectionChanged(`difficultyComboBox`) =>
       updateDifficulty()
@@ -49,6 +53,13 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
       controller.restart()
     case ButtonClicked(`exitButton`) =>
       sys.exit(0)
+    case ButtonClicked(`saveButton`) =>
+      fileIO.save(controller.field)
+      Dialog.showMessage(this, "Game state saved.", title = "Save State")
+    case ButtonClicked(`loadButton`) =>
+      controller.setField(fileIO.load)
+      refreshGrid()
+      Dialog.showMessage(this, "Game state loaded.", title = "Load State")
   }
 
   def updateDifficulty(): Unit = {
