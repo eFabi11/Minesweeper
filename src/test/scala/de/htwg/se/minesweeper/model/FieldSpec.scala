@@ -1,30 +1,36 @@
 package de.htwg.se.minesweeper.model
 
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
-class FieldSpec extends AnyWordSpec with Matchers {
+class FieldSpec extends AnyFlatSpec with Matchers {
 
-  "A Field" should {
+  "A Field" should "initialize correctly" in {
     val field = new Field(3, Symbols.Covered)
+    field.size should be (3)
+    field.cell(0, 0) should be (Symbols.Covered)
+  }
 
-    "have the correct size" in {
-      field.size should be(3)
-    }
+  it should "open cells correctly" in {
+    val game = new Game()
+    val field = new Field(3, Symbols.Covered)
+    val newField = field.open(0, 0, game)
 
-    "initialize with covered cells" in {
-      field.matrix.rows.flatten.forall(_ == Symbols.Covered) should be(true)
-    }
+    newField.cell(0, 0) should not be (Symbols.Covered)
+  }
 
-    "open cells correctly" in {
-      val game = Game()
-      val newField = field.open(1, 1, game)
-      newField.cell(1, 1) should not be Symbols.Covered
-    }
+  it should "flag cells correctly" in {
+    val field = new Field(3, Symbols.Covered)
+    val newField = field.flag(0, 0)
 
-    "flag cells correctly" in {
-      val flaggedField = field.flag(0, 0)
-      flaggedField.cell(0, 0) should be(Symbols.Flag)
-    }
+    newField.cell(0, 0) should be (Symbols.Flag)
+  }
+
+  it should "detect bombs correctly" in {
+    val field = new Field(3, Symbols.Covered)
+    val bombField = field.copy(bomben = field.bomben.replaceCell(0, 0, Symbols.Bomb))
+
+    bombField.isBomb(0, 0) should be (true)
+    bombField.isBomb(1, 1) should be (false)
   }
 }
