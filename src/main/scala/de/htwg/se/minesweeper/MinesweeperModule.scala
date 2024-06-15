@@ -1,9 +1,13 @@
 package de.htwg.se.minesweeper
 
 import com.google.inject.AbstractModule
-import de.htwg.se.minesweeper.controller.Controller
-import de.htwg.se.minesweeper.model.{Field, Game, Matrix, Symbols}
-import de.htwg.se.minesweeper.interfaces.{IController, IField, IGame}
+import de.htwg.se.minesweeper.controller.Controller.Controller
+import de.htwg.se.minesweeper.model.Matrix
+import de.htwg.se.minesweeper.model.Symbols
+import de.htwg.se.minesweeper.model.Field.Field
+import de.htwg.se.minesweeper.model.Game.Game
+import de.htwg.se.minesweeper.controller.IController
+import de.htwg.se.minesweeper.model.IGame
 import de.htwg.se.minesweeper.util.{FileIOInterface, FileIOJSON, FileIOXML}
 
 class MinesweeperModule extends AbstractModule {

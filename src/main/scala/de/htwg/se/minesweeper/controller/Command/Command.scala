@@ -1,7 +1,8 @@
-package de.htwg.se.minesweeper.command
+package de.htwg.se.minesweeper.controller.Command
 
-import de.htwg.se.minesweeper.interfaces.{IController, ICommand}
-import de.htwg.se.minesweeper.model.{Field, Game}
+import de.htwg.se.minesweeper.controller.{IController, ICommand}
+import de.htwg.se.minesweeper.model.Field.field
+import de.htwg.se.minesweeper.model.Game.Game
 
 trait Command extends ICommand {
   def execute(): Unit

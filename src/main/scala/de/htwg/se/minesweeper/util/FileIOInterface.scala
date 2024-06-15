@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.util
 
-import de.htwg.se.minesweeper.model.Field
+import de.htwg.se.minesweeper.model.Field.Field
 
 trait FileIOInterface {
   def load: Field

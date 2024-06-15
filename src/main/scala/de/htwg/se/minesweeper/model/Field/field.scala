@@ -1,6 +1,8 @@
-package de.htwg.se.minesweeper.model
+package de.htwg.se.minesweeper.model.Field
 
-import de.htwg.se.minesweeper.interfaces.IField
+import de.htwg.se.minesweeper.model.IField
+import de.htwg.se.minesweeper.model.Game.Game
+import de.htwg.se.minesweeper.model.{Matrix, Move, Symbols, Status}
 import com.google.inject.Inject
 
 case class Field @Inject() (matrix: Matrix[Symbols], bomben: Matrix[Symbols]) extends IField {

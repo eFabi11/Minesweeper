@@ -1,8 +1,10 @@
-package de.htwg.se.minesweeper.controller
+package de.htwg.se.minesweeper.controller.Controller
 
 import com.google.inject.Inject
-import de.htwg.se.minesweeper.interfaces.{IController, ICommand, IGame}
-import de.htwg.se.minesweeper.model.{Field, Symbols, Status}
+import de.htwg.se.minesweeper.controller.{IController, ICommand}
+import de.htwg.se.minesweeper.model.IGame
+import de.htwg.se.minesweeper.model.{Symbols, Status}
+import de.htwg.se.minesweeper.model.Field.field
 import de.htwg.se.minesweeper.util.Observable
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
 import de.htwg.se.minesweeper.command.{UncoverCommand, FlagCommand}

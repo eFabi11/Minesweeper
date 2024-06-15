@@ -1,6 +1,7 @@
 package de.htwg.se.minesweeper.util
 
-import de.htwg.se.minesweeper.model.{Field, Symbols}
+import de.htwg.se.minesweeper.model.Symbols
+import de.htwg.se.minesweeper.model.Field.field
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._

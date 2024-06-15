@@ -2,8 +2,8 @@ package de.htwg.se.minesweeper
 
 import com.google.inject.Guice
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
-import de.htwg.se.minesweeper.controller.Controller
-import de.htwg.se.minesweeper.util.{FileIOInterface, FileIOJSON, StdInInputSource}
+import de.htwg.se.minesweeper.controller.Controller.Controller
+import de.htwg.se.minesweeper.util.{FileIOInterface, StdInInputSource}
 
 object Minesweeper {
   def main(args: Array[String]): Unit = {

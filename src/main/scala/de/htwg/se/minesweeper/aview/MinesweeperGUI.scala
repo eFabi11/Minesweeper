@@ -1,8 +1,9 @@
 package de.htwg.se.minesweeper.aview
 
-import de.htwg.se.minesweeper.controller.Controller
+import de.htwg.se.minesweeper.controller.Controller.Controller
 import de.htwg.se.minesweeper.util.{Observer, FileIOInterface}
-import de.htwg.se.minesweeper.model.{Symbols, Status, Field}
+import de.htwg.se.minesweeper.model.{Symbols, Status}
+import de.htwg.se.minesweeper.model.Field.field
 import scala.swing._
 import scala.swing.event._
 import java.awt.event.{MouseEvent => AwtMouseEvent}

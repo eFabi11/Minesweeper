@@ -1,8 +1,9 @@
-package de.htwg.se.minesweeper.model
+package de.htwg.se.minesweeper.model.Game
 
 import scala.util.Random
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
-import de.htwg.se.minesweeper.interfaces.IGame
+import de.htwg.se.minesweeper.model.{IGame, Symbols, Matrix, Status}
+import de.htwg.se.minesweeper.model.Field.Field
 
 case class Game() extends IGame {
 
