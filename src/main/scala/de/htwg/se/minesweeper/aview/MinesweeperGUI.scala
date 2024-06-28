@@ -1,13 +1,15 @@
 package de.htwg.se.minesweeper.aview
 
 import de.htwg.se.minesweeper.controller.controller.Controller
-import de.htwg.se.minesweeper.util.Observer
+import de.htwg.se.minesweeper.util.{Observer, FileIOInterface}
 import de.htwg.se.minesweeper.model.{Symbols, Status}
+import de.htwg.se.minesweeper.model.field.Field
 import scala.swing._
 import scala.swing.event._
 import java.awt.event.{MouseEvent => AwtMouseEvent}
+import de.htwg.se.minesweeper.interfaces.IMinesweeperGUI
 
-class MinesweeperGUI(controller: Controller) extends Frame with Observer {
+class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Frame with IMinesweeperGUI with Observer {
   controller.add(this)
   title = "Minesweeper"
   preferredSize = new Dimension(800, 600)
@@ -22,6 +24,8 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
   val undoButton: Button = new Button("Undo")
   val restartButton: Button = new Button("Restart")
   val exitButton: Button = new Button("Exit")
+  val saveButton: Button = new Button("Save State")
+  val loadButton: Button = new Button("Load State")
 
   val topPanel: FlowPanel = new FlowPanel {
     contents += difficultyComboBox
@@ -29,6 +33,8 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
     contents += timeLabel
     contents += undoButton
     contents += restartButton
+    contents += saveButton
+    contents += loadButton
     contents += exitButton
   }
 
@@ -39,7 +45,7 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
 
   contents = mainPanel
 
-  listenTo(difficultyComboBox.selection, undoButton, restartButton, exitButton)
+  listenTo(difficultyComboBox.selection, undoButton, restartButton, exitButton, saveButton, loadButton)
   reactions += {
     case SelectionChanged(`difficultyComboBox`) =>
       updateDifficulty()
@@ -49,6 +55,13 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
       controller.restart()
     case ButtonClicked(`exitButton`) =>
       sys.exit(0)
+    case ButtonClicked(`saveButton`) =>
+      fileIO.save(controller.field)
+      Dialog.showMessage(this, "Game state saved.", title = "Save State")
+    case ButtonClicked(`loadButton`) =>
+      controller.setField(fileIO.load)
+      refreshGrid()
+      Dialog.showMessage(this, "Game state loaded.", title = "Load State")
   }
 
   def updateDifficulty(): Unit = {
@@ -61,7 +74,6 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
   }
 
   def refreshGrid(): Unit = {
-    // Ensure the field size is not zero before creating the GridPanel
     if (controller.field.size > 0) {
       gridPanel = new GridPanel(controller.field.size, controller.field.size) {
         preferredSize = new Dimension(600, 600)
@@ -74,12 +86,12 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
         val button = new Button {
           reactions += {
             case ButtonClicked(_) =>
-              controller.uncoverField(col, row)  // Use col, row instead of row, col
+              controller.uncoverField(col, row)
           }
           listenTo(mouse.clicks)
           reactions += {
             case e: MousePressed if (e.peer.getButton == AwtMouseEvent.BUTTON3) =>
-              controller.flagField(col, row)  // Use col, row instead of row, col
+              controller.flagField(col, row)
           }
         }
 
@@ -119,7 +131,6 @@ class MinesweeperGUI(controller: Controller) extends Frame with Observer {
   override def update(): Unit = {
     refreshGrid()
     flagLabel.text = s"Flags: ${controller.field.matrix.rows.flatten.count(_ == Symbols.Flag)}"
-    
     if (controller.game.gameState == Status.Won || controller.game.gameState == Status.Lost) {
       showEndGameDialog(controller.game.gameState)
     }

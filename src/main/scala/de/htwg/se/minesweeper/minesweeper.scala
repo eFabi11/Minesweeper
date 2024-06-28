@@ -1,22 +1,15 @@
 package de.htwg.se.minesweeper
 
-import de.htwg.se.minesweeper.controller.controller.Controller
-import de.htwg.se.minesweeper.model.Symbols
-import de.htwg.se.minesweeper.model.field.Field
-import de.htwg.se.minesweeper.model.game.Game
-import de.htwg.se.minesweeper.util.StdInInputSource
-import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
+import com.google.inject.Guice
+import de.htwg.se.minesweeper.interfaces.{IMinesweeperGUI, ITUI}
 
 object Minesweeper {
   def main(args: Array[String]): Unit = {
-    val game = new Game()
-    val field = new Field(10, Symbols.Covered) // Default field, adjust as necessary
-    val controller = new Controller(field, game)
-    
-    // Initialize TUI and GUI
-    val tui = new TUI(controller, StdInInputSource)
-    val gui = new MinesweeperGUI(controller)
-    
+    val injector = Guice.createInjector(new MinesweeperModule())
+
+    val tui = injector.getInstance(classOf[ITUI])
+    val gui = injector.getInstance(classOf[IMinesweeperGUI])
+
     gui.visible = true // Ensure GUI is visible
     tui.run()
   }

@@ -1,16 +1,16 @@
 package de.htwg.se.minesweeper.controller.controller
 
-import de.htwg.se.minesweeper.controller.{IController, ICommand}
-import de.htwg.se.minesweeper.model.{Symbols, Status}
+import com.google.inject.Inject
+import de.htwg.se.minesweeper.controller.{ICommand, IController}
+import de.htwg.se.minesweeper.model.{Symbols, Status, IGame}
 import de.htwg.se.minesweeper.model.field.Field
-import de.htwg.se.minesweeper.model.game.Game
-import de.htwg.se.minesweeper.util.Observable
+import de.htwg.se.minesweeper.util.{Observable, Observer}
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
-import de.htwg.se.minesweeper.command.{UncoverCommand, FlagCommand}
-import de.htwg.se.minesweeper.command.Command
+import de.htwg.se.minesweeper.command.{UncoverCommand, FlagCommand, Command}
+import de.htwg.se.minesweeper.model.game.Game
 
-class Controller(var field: Field, var game: Game) extends Observable with IController {
-  private var undoStack: List[ICommand] = Nil
+class Controller @Inject() (var field: Field, var game: IGame) extends Observable with IController {
+  private var undoStack: List[Command] = Nil
   var isFirstMove: Boolean = true
 
   def setFirstMove(value: Boolean): Unit = {
@@ -19,6 +19,7 @@ class Controller(var field: Field, var game: Game) extends Observable with ICont
 
   def setField(newField: Field): Unit = {
     field = newField
+    notifyObservers()
   }
 
   def initializeField(): Unit = {
@@ -32,8 +33,13 @@ class Controller(var field: Field, var game: Game) extends Observable with ICont
   }
 
   def uncoverField(x: Int, y: Int): Unit = {
-    val cmd = new UncoverCommand(this, x, y)
-    executeCommand(cmd)
+    if (isFirstMove) {
+      firstMove(x, y)
+      setFirstMove(false)
+    } else {
+      val cmd = new UncoverCommand(this, x, y)
+      executeCommand(cmd)
+    }
   }
 
   def flagField(x: Int, y: Int): Unit = {
@@ -54,7 +60,7 @@ class Controller(var field: Field, var game: Game) extends Observable with ICont
     }
   }
 
-  def executeCommand(command: ICommand): Unit = {
+  def executeCommand(command: Command): Unit = {
     command.execute()
     undoStack = command :: undoStack
   }
@@ -73,6 +79,10 @@ class Controller(var field: Field, var game: Game) extends Observable with ICont
     game.gameState = Status.Playing
     isFirstMove = true
     initializeField()
+  }
+
+  def addObserver(observer: Observer): Unit = {
+    add(observer)
   }
 
   override def toString: String = field.toString

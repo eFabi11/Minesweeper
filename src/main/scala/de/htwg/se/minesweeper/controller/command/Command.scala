@@ -2,6 +2,7 @@ package de.htwg.se.minesweeper.command
 
 import de.htwg.se.minesweeper.controller.{IController, ICommand}
 import de.htwg.se.minesweeper.model.field.Field
+import de.htwg.se.minesweeper.model.game.Game
 
 trait Command extends ICommand {
     def execute(): Unit
@@ -17,7 +18,7 @@ class UncoverCommand(controller: IController, x: Int, y: Int) extends Command {
             controller.firstMove(x, y)
             controller.setFirstMove(false)
         } else {
-            val newField = controller.field.open(x, y, controller.game)
+            val newField = controller.field.open(x, y, controller.game.asInstanceOf[Game])
             controller.setField(newField)
             controller.checkGameState()
         }
