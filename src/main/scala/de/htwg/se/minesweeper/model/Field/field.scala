@@ -1,20 +1,19 @@
 package de.htwg.se.minesweeper.model.Field
 
-import de.htwg.se.minesweeper.model.IField
+import de.htwg.se.minesweeper.model.{Matrix, Symbols, IField, Status}
 import de.htwg.se.minesweeper.model.Game.Game
-import de.htwg.se.minesweeper.model.{Matrix, Move, Symbols, Status}
-import com.google.inject.Inject
 
-case class Field @Inject() (matrix: Matrix[Symbols], bomben: Matrix[Symbols]) extends IField {
-  def this(size: Int, filling: Symbols) = this(new Matrix(size, filling), new Matrix(size, Symbols.Empty))
-  val size = matrix.size
+case class Field(matrix: Matrix[Symbols], bomben: Matrix[Symbols]) extends IField {
+  override def copy(): IField = new Field(matrix.copy(), bomben.copy())
+  
+  val size: Int = matrix.size
 
   def cell(row: Int, col: Int): Symbols = matrix.cell(row, col)
   
   val endl = sys.props("line.separator")
-  def bar(cellWidth: Int = 3, cellNum: Int = 3) = (("+" + "-" * cellWidth) * cellNum) + "+" + endl
-  def cells(row: Int = 3, cellWidth: Int = 3) = matrix.row(row).map(_.toString).map(" " * ((cellWidth-1)/2) + _ + " " *((cellWidth -1)/2)).mkString("|","|","|") + endl
-  def mesh(cellWidth: Int = 3) = (0 until size).map(cells(_, cellWidth)).mkString(bar(cellWidth, size), bar(cellWidth, size), bar(cellWidth, size))
+  def bar(cellWidth: Int = 3, cellNum: Int = 3): String = (("+" + "-" * cellWidth) * cellNum) + "+" + endl
+  def cells(row: Int = 3, cellWidth: Int = 3): String = matrix.row(row).map(_.toString).map(" " * ((cellWidth-1)/2) + _ + " " *((cellWidth -1)/2)).mkString("|","|","|") + endl
+  def mesh(cellWidth: Int = 3): String = (0 until size).map(cells(_, cellWidth)).mkString(bar(cellWidth, size), bar(cellWidth, size), bar(cellWidth, size))
 
   def isBomb(x: Int, y: Int): Boolean = {
     val si = bomben.size - 1
@@ -66,8 +65,7 @@ case class Field @Inject() (matrix: Matrix[Symbols], bomben: Matrix[Symbols]) ex
     copy(matrix = newMatrix)
   }
 
-  // Corrected copy method
-  def copy(): Field = {
+  override def copy(matrix: Matrix[Symbols] = this.matrix, bomben: Matrix[Symbols] = this.bomben): Field = {
     Field(matrix.map(identity), bomben.map(identity))
   }
 

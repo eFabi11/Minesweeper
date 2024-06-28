@@ -3,6 +3,7 @@ package de.htwg.se.minesweeper.controller
 import de.htwg.se.minesweeper.model.Field.Field
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
 import de.htwg.se.minesweeper.model.IGame
+import de.htwg.se.minesweeper.util.Observer
 
 trait IController {
   def field: Field
@@ -20,5 +21,7 @@ trait IController {
   def undo(): Unit
   def restart(): Unit
   def notifyObservers(): Unit
-  def setField(newField: Field): Unit
+
+  def addObserver(observer: Observer): Unit
+  def setField(field: Field): Unit
 }

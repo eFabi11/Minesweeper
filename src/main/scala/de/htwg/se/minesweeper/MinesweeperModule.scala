@@ -1,25 +1,15 @@
-package de.htwg.se.minesweeper
-
 import com.google.inject.AbstractModule
-import de.htwg.se.minesweeper.controller.Controller.Controller
-import de.htwg.se.minesweeper.model.Matrix
-import de.htwg.se.minesweeper.model.Symbols
+import net.codingwell.scalaguice.ScalaModule
+import de.htwg.se.minesweeper.controller.{IController, Controller}
 import de.htwg.se.minesweeper.model.Field.Field
 import de.htwg.se.minesweeper.model.Game.Game
-import de.htwg.se.minesweeper.controller.IController
-import de.htwg.se.minesweeper.model.IGame
-import de.htwg.se.minesweeper.util.{FileIOInterface, FileIOJSON, FileIOXML}
+import de.htwg.se.minesweeper.util.{FileIOInterface, FileIOJSON}
 
-class MinesweeperModule extends AbstractModule {
+class MinesweeperModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
-    // Bind the game and field instances
-    bind(classOf[IGame]).to(classOf[Game])
     bind(classOf[Field]).toInstance(new Field(new Matrix(10, Symbols.Covered), new Matrix(10, Symbols.Empty)))
-
-    // Bind the controller
+    bind(classOf[Game]).toInstance(new Game())
     bind(classOf[IController]).to(classOf[Controller])
-
-    // Bind FileIO implementations
-    bind(classOf[FileIOInterface]).to(classOf[FileIOJSON]) // or FileIOXML
+    bind(classOf[FileIOInterface]).to(classOf[FileIOJSON])
   }
 }

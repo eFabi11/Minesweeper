@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.model
 
-enum Symbols(representedAsString: String):
+enum Symbols(val representedAsString: String):
   override def toString: String = representedAsString
   case Covered extends Symbols("-")
   case Bomb extends Symbols("*")
@@ -16,8 +16,8 @@ enum Symbols(representedAsString: String):
   case Eight extends Symbols("8")
   case Flag extends Symbols("f")
 
-object Symbols {
-  def fromInt(minesAround: Int): Symbols = minesAround match {
+object Symbols:
+  def fromInt(minesAround: Int): Symbols = minesAround match
     case 0 => Symbols.Zero
     case 1 => Symbols.One
     case 2 => Symbols.Two
@@ -28,5 +28,3 @@ object Symbols {
     case 7 => Symbols.Seven
     case 8 => Symbols.Eight
     case _ => throw new IllegalArgumentException("Invalid number of mines around")
-  }
-}

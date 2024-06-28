@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.aview
 
-import de.htwg.se.minesweeper.controller.Controller.Controller
+import de.htwg.se.minesweeper.controller.IController
 import de.htwg.se.minesweeper.util.Observer
 import de.htwg.se.minesweeper.model.{Move, Status}
 import de.htwg.se.minesweeper.util.InputSource
@@ -8,7 +8,7 @@ import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, EasyDifficulty, Me
 
 import scala.util.{Try, Success, Failure}
 
-class TUI(controller: Controller, inputSource: InputSource) extends Observer {
+class TUI(controller: IController, inputSource: InputSource) extends Observer {
 
     override def update(): Unit = println(controller.field.toString())
 

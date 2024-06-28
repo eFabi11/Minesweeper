@@ -1,18 +1,18 @@
 package de.htwg.se.minesweeper.template
 
 import de.htwg.se.minesweeper.model.Game.Game
-import de.htwg.se.minesweeper.model.Field.field
-
+import de.htwg.se.minesweeper.model.IField
+import de.htwg.se.minesweeper.model.Field.Field
 
 abstract class GameInitializer {
-  def initializeGame(game: Game, x: Int, y: Int): Field = {
+  def initializeGame(game: Game, x: Int, y: Int): IField = {
     setDifficulty(game)
     initializeField(game, x, y)
   }
 
   protected def setDifficulty(game: Game): Unit
 
-  protected def initializeField(game: Game, x: Int, y: Int): Field
+  protected def initializeField(game: Game, x: Int, y: Int): IField
 }
 
 class EasyGameInitializer extends GameInitializer {
@@ -21,7 +21,7 @@ class EasyGameInitializer extends GameInitializer {
     game.bombCount = 1
   }
 
-  override protected def initializeField(game: Game, x: Int, y: Int): Field = {
+  override protected def initializeField(game: Game, x: Int, y: Int): IField = {
     game.initializeField(x, y)
   }
 }
@@ -32,7 +32,7 @@ class MediumGameInitializer extends GameInitializer {
     game.bombCount = 6
   }
 
-  override protected def initializeField(game: Game, x: Int, y: Int): Field = {
+  override protected def initializeField(game: Game, x: Int, y: Int): IField = {
     game.initializeField(x, y)
   }
 }
@@ -43,7 +43,7 @@ class HardGameInitializer extends GameInitializer {
     game.bombCount = 40
   }
 
-  override protected def initializeField(game: Game, x: Int, y: Int): Field = {
+  override protected def initializeField(game: Game, x: Int, y: Int): IField = {
     game.initializeField(x, y)
   }
 }

@@ -1,44 +1,31 @@
 package de.htwg.se.minesweeper.util
 
+import de.htwg.se.minesweeper.model.Field.Field
+import de.htwg.se.minesweeper.model.Matrix
 import de.htwg.se.minesweeper.model.Symbols
-import de.htwg.se.minesweeper.model.Field.field
-import io.circe._
-import io.circe.generic.auto._
-import io.circe.syntax._
+import com.google.inject.Inject
+import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.parser._
+import io.circe.syntax._
+import java.io.{File, PrintWriter}
 
-import java.io._
+class FileIOJSON @Inject() extends FileIOInterface {
+  implicit val symbolsEncoder: Encoder[Symbols] = (a: Symbols) => Json.fromString(a.toString)
+  implicit val symbolsDecoder: Decoder[Symbols] = (c: HCursor) => for {
+    str <- c.as[String]
+  } yield Symbols.valueOf(str)
 
-class FileIOJSON extends FileIOInterface {
-
-  implicit val symbolsEncoder: Encoder[Symbols] = Encoder.encodeString.contramap[Symbols](_.toString)
-  implicit val symbolsDecoder: Decoder[Symbols] = Decoder.decodeString.emap {
-    case "-" => Right(Symbols.Covered)
-    case "*" => Right(Symbols.Bomb)
-    case " " => Right(Symbols.Empty)
-    case "f" => Right(Symbols.Flag)
-    case "0" => Right(Symbols.Zero)
-    case "1" => Right(Symbols.One)
-    case "2" => Right(Symbols.Two)
-    case "3" => Right(Symbols.Three)
-    case "4" => Right(Symbols.Four)
-    case "5" => Right(Symbols.Five)
-    case "6" => Right(Symbols.Six)
-    case "7" => Right(Symbols.Seven)
-    case "8" => Right(Symbols.Eight)
-    case other => Left(s"Unknown symbol: $other")
-  }
+  implicit val fieldEncoder: Encoder[Field] = Encoder.forProduct2("matrix", "bomben")(f => (f.matrix, f.bomben))
+  implicit val fieldDecoder: Decoder[Field] = Decoder.forProduct2("matrix", "bomben")(Field.apply)
 
   override def load: Field = {
     val source = scala.io.Source.fromFile("field.json")
     val jsonString = try source.mkString finally source.close()
-    val json = parse(jsonString).getOrElse(Json.Null)
-    json.as[Field].getOrElse(new Field(3, Symbols.Covered))
+    decode[Field](jsonString).getOrElse(new Field(new Matrix(3, Symbols.Covered), new Matrix(3, Symbols.Empty)))
   }
 
   override def save(field: Field): Unit = {
     val pw = new PrintWriter(new File("field.json"))
-    pw.write(field.asJson.noSpaces)
-    pw.close()
+    try pw.write(field.asJson.noSpaces) finally pw.close()
   }
 }

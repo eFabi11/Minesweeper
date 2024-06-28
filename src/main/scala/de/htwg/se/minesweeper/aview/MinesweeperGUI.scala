@@ -1,15 +1,15 @@
 package de.htwg.se.minesweeper.aview
 
-import de.htwg.se.minesweeper.controller.Controller.Controller
+import de.htwg.se.minesweeper.controller.IController
 import de.htwg.se.minesweeper.util.{Observer, FileIOInterface}
-import de.htwg.se.minesweeper.model.{Symbols, Status}
-import de.htwg.se.minesweeper.model.Field.field
+import de.htwg.se.minesweeper.model.{Symbols, Status, IField}
+import de.htwg.se.minesweeper.model.Field.Field
 import scala.swing._
 import scala.swing.event._
 import java.awt.event.{MouseEvent => AwtMouseEvent}
 
-class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Frame with Observer {
-  controller.add(this)
+class MinesweeperGUI(controller: IController, fileIO: FileIOInterface) extends Frame with Observer {
+  controller.addObserver(this)
   title = "Minesweeper"
   preferredSize = new Dimension(800, 600)
 
@@ -73,7 +73,6 @@ class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Fr
   }
 
   def refreshGrid(): Unit = {
-    // Ensure the field size is not zero before creating the GridPanel
     if (controller.field.size > 0) {
       gridPanel = new GridPanel(controller.field.size, controller.field.size) {
         preferredSize = new Dimension(600, 600)
@@ -86,28 +85,28 @@ class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Fr
         val button = new Button {
           reactions += {
             case ButtonClicked(_) =>
-              controller.uncoverField(col, row)  // Use col, row instead of row, col
+              controller.uncoverField(col, row)
           }
           listenTo(mouse.clicks)
           reactions += {
             case e: MousePressed if (e.peer.getButton == AwtMouseEvent.BUTTON3) =>
-              controller.flagField(col, row)  // Use col, row instead of row, col
+              controller.flagField(col, row)
           }
         }
 
-        controller.field.asInstanceOf[Field].cell(row, col) match { // Cast to Field
+        controller.field.cell(row, col) match {
           case Symbols.Covered => button.background = java.awt.Color.GREEN
           case Symbols.Flag => button.background = java.awt.Color.BLUE
           case Symbols.Empty => button.background = java.awt.Color.GRAY
           case Symbols.Bomb =>
-            if (controller.field.asInstanceOf[Field].cell(row, col) == Symbols.Bomb && controller.game.gameState == Status.Lost) {
+            if (controller.field.cell(row, col) == Symbols.Bomb && controller.game.gameState == Status.Lost) {
               button.background = java.awt.Color.RED
             } else {
               button.background = java.awt.Color.BLACK
             }
           case _ =>
             button.background = java.awt.Color.LIGHT_GRAY
-            button.text = controller.field.asInstanceOf[Field].cell(row, col).toString
+            button.text = controller.field.cell(row, col).toString
         }
 
         gridPanel.contents += button
@@ -130,7 +129,7 @@ class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Fr
 
   override def update(): Unit = {
     refreshGrid()
-    flagLabel.text = s"Flags: ${controller.field.asInstanceOf[Field].matrix.rows.flatten.count(_ == Symbols.Flag)}" // Cast to Field
+    flagLabel.text = s"Flags: ${controller.field.matrix.rows.flatten.count(_ == Symbols.Flag)}"
     
     if (controller.game.gameState == Status.Won || controller.game.gameState == Status.Lost) {
       showEndGameDialog(controller.game.gameState)

@@ -23,7 +23,7 @@ case class Game() extends IGame {
     }
   }
 
-  def initializeField(x: Int, y: Int): Field = {
+  def initializeField(x: Int, y: Int): Field = { // Return type is Field
     val bombenMatrix = setBombs(new Matrix(gridSize, Symbols.Empty), bombCount, x, y)
     val playerMatrix = openCells(x, y, bombenMatrix, new Matrix(gridSize, Symbols.Covered))
     new Field(playerMatrix, bombenMatrix)

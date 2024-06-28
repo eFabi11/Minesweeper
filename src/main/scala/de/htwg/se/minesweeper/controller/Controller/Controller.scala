@@ -2,14 +2,14 @@ package de.htwg.se.minesweeper.controller.Controller
 
 import com.google.inject.Inject
 import de.htwg.se.minesweeper.controller.{IController, ICommand}
-import de.htwg.se.minesweeper.model.IGame
-import de.htwg.se.minesweeper.model.{Symbols, Status}
-import de.htwg.se.minesweeper.model.Field.field
-import de.htwg.se.minesweeper.util.Observable
+import de.htwg.se.minesweeper.model._
+import de.htwg.se.minesweeper.model.Field.Field
+import de.htwg.se.minesweeper.model.Game.Game
+import de.htwg.se.minesweeper.util.{Observable, Observer}
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
-import de.htwg.se.minesweeper.command.{UncoverCommand, FlagCommand}
+import de.htwg.se.minesweeper.controller.Command.{UncoverCommand, FlagCommand}
 
-class Controller @Inject() (var field: Field, var game: IGame) extends Observable with IController {
+class Controller @Inject() (var field: Field, var game: Game) extends Observable with IController {
   private var undoStack: List[ICommand] = Nil
   var isFirstMove: Boolean = true
 
@@ -22,7 +22,7 @@ class Controller @Inject() (var field: Field, var game: IGame) extends Observabl
   }
 
   def initializeField(): Unit = {
-    field = new Field(game.gridSize, Symbols.Covered)
+    field = new Field(new Matrix(game.gridSize, Symbols.Covered), new Matrix(game.gridSize, Symbols.Empty))
     notifyObservers()
   }
 
@@ -73,6 +73,10 @@ class Controller @Inject() (var field: Field, var game: IGame) extends Observabl
     game.gameState = Status.Playing
     isFirstMove = true
     initializeField()
+  }
+
+  def add(observer: Observer): Unit = {
+    addObserver(observer) // This method is now correctly defined in Observable trait
   }
 
   override def toString: String = field.toString
