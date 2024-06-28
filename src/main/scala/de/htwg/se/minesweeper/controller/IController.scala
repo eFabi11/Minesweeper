@@ -1,6 +1,7 @@
-package de.htwg.se.minesweeper.interfaces
+package de.htwg.se.minesweeper.controller
 
-import de.htwg.se.minesweeper.model.{Field, Game}
+import de.htwg.se.minesweeper.model.field.Field
+import de.htwg.se.minesweeper.model.game.Game
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
 
 trait IController {

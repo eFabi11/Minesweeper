@@ -1,10 +1,13 @@
-package de.htwg.se.minesweeper.controller
+package de.htwg.se.minesweeper.controller.controller
 
-import de.htwg.se.minesweeper.interfaces.{IController, ICommand}
-import de.htwg.se.minesweeper.model.{Field, Game, Symbols, Status}
+import de.htwg.se.minesweeper.controller.{IController, ICommand}
+import de.htwg.se.minesweeper.model.{Symbols, Status}
+import de.htwg.se.minesweeper.model.field.Field
+import de.htwg.se.minesweeper.model.game.Game
 import de.htwg.se.minesweeper.util.Observable
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
 import de.htwg.se.minesweeper.command.{UncoverCommand, FlagCommand}
+import de.htwg.se.minesweeper.command.Command
 
 class Controller(var field: Field, var game: Game) extends Observable with IController {
   private var undoStack: List[ICommand] = Nil

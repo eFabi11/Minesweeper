@@ -1,4 +1,7 @@
-package de.htwg.se.minesweeper.model
+package de.htwg.se.minesweeper.model.field
+
+import de.htwg.se.minesweeper.model._
+import de.htwg.se.minesweeper.model.game.Game
 
 case class Field(matrix: Matrix[Symbols], bomben: Matrix[Symbols]) {
     def this(size: Int, filling: Symbols) = this(new Matrix(size, filling), new Matrix(size, Symbols.Empty))

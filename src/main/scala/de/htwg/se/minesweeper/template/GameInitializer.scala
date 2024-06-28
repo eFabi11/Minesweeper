@@ -1,6 +1,7 @@
 package de.htwg.se.minesweeper.template
 
-import de.htwg.se.minesweeper.model.{Field, Game}
+import de.htwg.se.minesweeper.model.field.Field
+import de.htwg.se.minesweeper.model.game.Game
 
 abstract class GameInitializer {
   def initializeGame(game: Game, x: Int, y: Int): Field = {

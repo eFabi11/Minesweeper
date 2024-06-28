@@ -1,7 +1,9 @@
-package de.htwg.se.minesweeper.model
+package de.htwg.se.minesweeper.model.game
 
 import scala.util.Random
 import de.htwg.se.minesweeper.difficulty.DifficultyStrategy
+import de.htwg.se.minesweeper.model._
+import de.htwg.se.minesweeper.model.field.Field
 
 case class Game() {
 

@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.aview
 
-import de.htwg.se.minesweeper.controller.Controller
+import de.htwg.se.minesweeper.controller.controller.Controller
 import de.htwg.se.minesweeper.util.Observer
 import de.htwg.se.minesweeper.model.{Move, Status}
 import de.htwg.se.minesweeper.util.InputSource

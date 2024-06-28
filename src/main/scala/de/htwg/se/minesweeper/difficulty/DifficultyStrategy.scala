@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.difficulty
 
-import de.htwg.se.minesweeper.model.Game
+import de.htwg.se.minesweeper.model.game.Game
 
 trait DifficultyStrategy {
   def setDifficulty(game: Game): Unit

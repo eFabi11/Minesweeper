@@ -1,7 +1,9 @@
 package de.htwg.se.minesweeper
 
-import de.htwg.se.minesweeper.controller.Controller
-import de.htwg.se.minesweeper.model.{Field, Game, Symbols}
+import de.htwg.se.minesweeper.controller.controller.Controller
+import de.htwg.se.minesweeper.model.Symbols
+import de.htwg.se.minesweeper.model.field.Field
+import de.htwg.se.minesweeper.model.game.Game
 import de.htwg.se.minesweeper.util.StdInInputSource
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
 

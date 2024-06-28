@@ -1,6 +1,8 @@
-package de.htwg.se.minesweeper.interfaces
+package de.htwg.se.minesweeper.model
 
-import de.htwg.se.minesweeper.model.{Field, Symbols, Game}
+import de.htwg.se.minesweeper.model.Symbols
+import de.htwg.se.minesweeper.model.field.Field
+import de.htwg.se.minesweeper.model.game.Game
 
 trait IField {
   def size: Int

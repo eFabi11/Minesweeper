@@ -1,7 +1,7 @@
 package de.htwg.se.minesweeper.command
 
-import de.htwg.se.minesweeper.interfaces.{IController, ICommand}
-import de.htwg.se.minesweeper.model.Field
+import de.htwg.se.minesweeper.controller.{IController, ICommand}
+import de.htwg.se.minesweeper.model.field.Field
 
 trait Command extends ICommand {
     def execute(): Unit
