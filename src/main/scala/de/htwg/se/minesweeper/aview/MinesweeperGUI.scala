@@ -1,7 +1,7 @@
 package de.htwg.se.minesweeper.aview
 
 import de.htwg.se.minesweeper.controller.controller.Controller
-import de.htwg.se.minesweeper.util.{Observer, FileIOInterface}
+import de.htwg.se.minesweeper.util.{Observer, FileIOInterface, FileIOJSON, FileIOXML}
 import de.htwg.se.minesweeper.model.{Symbols, Status}
 import de.htwg.se.minesweeper.model.field.Field
 import scala.swing._
@@ -9,7 +9,7 @@ import scala.swing.event._
 import java.awt.event.{MouseEvent => AwtMouseEvent}
 import de.htwg.se.minesweeper.interfaces.IMinesweeperGUI
 
-class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Frame with IMinesweeperGUI with Observer {
+class MinesweeperGUI(controller: Controller, fileIOJSON: FileIOJSON, fileIOXML: FileIOXML) extends Frame with IMinesweeperGUI with Observer {
   controller.add(this)
   title = "Minesweeper"
   preferredSize = new Dimension(800, 600)
@@ -56,12 +56,13 @@ class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Fr
     case ButtonClicked(`exitButton`) =>
       sys.exit(0)
     case ButtonClicked(`saveButton`) =>
-      fileIO.save(controller.field)
-      Dialog.showMessage(this, "Game state saved.", title = "Save State")
+      fileIOJSON.save(controller.field)
+      fileIOXML.save(controller.field) // Save to XML as well
+      Dialog.showMessage(this, "Game state saved to JSON and XML.", title = "Save State")
     case ButtonClicked(`loadButton`) =>
-      controller.setField(fileIO.load)
+      controller.setField(fileIOJSON.load)
       refreshGrid()
-      Dialog.showMessage(this, "Game state loaded.", title = "Load State")
+      Dialog.showMessage(this, "Game state loaded from JSON.", title = "Load State")
   }
 
   def updateDifficulty(): Unit = {
@@ -128,11 +129,19 @@ class MinesweeperGUI(controller: Controller, fileIO: FileIOInterface) extends Fr
     Dialog.showMessage(this, message, title = "Game Over", Dialog.Message.Info)
   }
 
+  def handleGameOver(status: Status): Unit = {
+    val message = if (status == Status.Lost) "You lost! Click OK to see the final state." else ""
+    if (message.nonEmpty) {
+      Dialog.showMessage(this, message, title = "Game Over", Dialog.Message.Info)
+      showEndGameDialog(status)
+    }
+  }
+
   override def update(): Unit = {
     refreshGrid()
     flagLabel.text = s"Flags: ${controller.field.matrix.rows.flatten.count(_ == Symbols.Flag)}"
     if (controller.game.gameState == Status.Won || controller.game.gameState == Status.Lost) {
-      showEndGameDialog(controller.game.gameState)
+      handleGameOver(controller.game.gameState)
     }
   }
 
