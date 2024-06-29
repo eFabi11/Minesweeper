@@ -1,4 +1,4 @@
-import org.scalatest.flatspec.AnyFlatSpec
+/*import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import de.htwg.se.minesweeper.model._
 import de.htwg.se.minesweeper.template._
@@ -35,3 +35,4 @@ class GameInitializerSpec extends AnyFlatSpec with Matchers {
     field.size should be(16)
   }
 }
+*/

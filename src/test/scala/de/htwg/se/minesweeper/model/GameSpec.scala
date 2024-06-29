@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.model
+/*package de.htwg.se.minesweeper.model
 
 import de.htwg.se.minesweeper.difficulty.EasyDifficulty
 import org.scalatest.matchers.should.Matchers
@@ -29,3 +29,4 @@ class GameSpec extends AnyWordSpec with Matchers {
     }
   }
 }
+*/

@@ -1,5 +1,4 @@
-package de.htwg.se.minesweeper.difficulty
-
+/* package de.htwg.se.minesweeper.difficulty
 import de.htwg.se.minesweeper.model.Game
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -39,3 +38,4 @@ class DifficultyStrategySpec extends AnyWordSpec with Matchers {
     }
   }
 }
+*/

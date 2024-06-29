@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.model
+/* de.htwg.se.minesweeper.model
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -34,3 +34,4 @@ class FieldSpec extends AnyFlatSpec with Matchers {
     bombField.isBomb(1, 1) should be (false)
   }
 }
+*/

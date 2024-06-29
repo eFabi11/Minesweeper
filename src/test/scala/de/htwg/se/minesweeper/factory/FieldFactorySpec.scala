@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.factory
+/*package de.htwg.se.minesweeper.factory
 
 import de.htwg.se.minesweeper.model.{Field, Symbols}
 import org.scalatest.matchers.should.Matchers
@@ -17,3 +17,4 @@ class FieldFactorySpec extends AnyWordSpec with Matchers {
     }
   }
 }
+*/

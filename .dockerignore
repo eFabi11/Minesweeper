@@ -1,0 +1,24 @@
+# Ignoriere alle versteckten Dateien und Verzeichnisse
+.*
+!.dockerignore
+
+# Ignoriere alle Verzeichnisse und Dateien, die nicht für den Build benötigt werden
+node_modules
+target
+build
+logs
+tmp
+
+# Ignoriere Versionskontrolldateien
+.git
+.gitignore
+.svn
+
+# Ignoriere Betriebssystem-spezifische Dateien
+.DS_Store
+Thumbs.db
+
+# Ignoriere temporäre Editordateien
+*.swp
+*.swo
+*.tmp

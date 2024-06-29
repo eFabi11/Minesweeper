@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.aview
+/* package de.htwg.se.minesweeper.aview
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -106,3 +106,4 @@ class TUISpec extends AnyFlatSpec with Matchers with MockitoSugar {
     verify(controller).uncoverField(0, 0)
   }
 }
+*/

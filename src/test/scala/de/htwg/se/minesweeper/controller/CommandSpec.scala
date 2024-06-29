@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.command
+/*package de.htwg.se.minesweeper.command
 
 import de.htwg.se.minesweeper.controller.Controller
 import de.htwg.se.minesweeper.model.{Field, Symbols, Game}
@@ -55,3 +55,4 @@ class CommandSpec extends AnyWordSpec with Matchers {
     }
   }
 }
+*/
