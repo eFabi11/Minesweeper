@@ -75,10 +75,22 @@ Winning: Open all safe squares.
 Losing: Click on a mine.
 
 
-Hints:
+## Hints:
+
+After opening the first Field  it should look like this:
+![start](src/main/resources/pic1.png)
+
+After selecting an other free Field:
+![open](src/main/resources/pic2.png)
+
+Here you can see that in this area it should be 1 Bomb: <br />
+![one_Field](src/main/resources/pic3.png)
+
+In this Area it indicates there are 2 Bombs: <br />
+![2_bombs](src/main/resources/pic4.png)</br>
 
 ## Authors
 
-Fabian Eitel
+Fabian Eitel <br />
 @eFabi11
 
