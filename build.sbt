@@ -26,6 +26,8 @@ import org.scoverage.coveralls.Imports.CoverallsKeys._
 
 coverallsTokenFile := sys.env.get("COVERALLS_REPO_TOKEN")
 coverallsService := Some(GitHubActions)
+coverageExcludedFiles := "de.htwg.se.minesweeper.aview.TUI.scala; de.htwg.se.minesweeper.aview.MinesweeperGUI.scala"
+
 
 coverageHighlighting := true
 coverageFailOnMinimum := false
@@ -35,3 +37,5 @@ coverageMinimumStmtPerPackage := 0
 coverageMinimumBranchPerPackage := 0
 coverageMinimumStmtPerFile := 0
 coverageMinimumBranchPerFile := 0
+
+
