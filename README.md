@@ -17,6 +17,7 @@ sbt run
 ```
 
 Run the program in Docker:
+First switch to branch SE-12-FIleIO-2
 Start an x11 server in the Background: Parameters: Multiple Windows, Display Number default -1, start no client, Disable accses control true
 build the docker image with:
 
