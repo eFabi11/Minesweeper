@@ -35,6 +35,11 @@ Execute the Program with
 ```
 run
 ```
+## Play the Game without docker:
+
+```
+sbt run
+```
 
 ## Test
 
