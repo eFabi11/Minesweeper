@@ -16,8 +16,8 @@ Run the game local:
 sbt run
 ```
 
-Run the program in Docker:
-First switch to branch SE-12-FIleIO-2
+Run the program in Docker: <br />
+First switch to the Branch SE-12-FIleIO-2 <br />
 Start an x11 server in the Background: Parameters: Multiple Windows, Display Number default -1, start no client, Disable accses control true
 build the docker image with:
 
